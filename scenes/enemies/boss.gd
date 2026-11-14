@@ -9,11 +9,19 @@ extends Enemy
 ##                                        `if halted(): return` after every wait)
 ##   _move(delta) -> Vector2              how it moves between attacks
 ##   _on_phase_changed(phase)             optional
+##   _on_stage_changed(stage)             optional (after it bounces back into the next stage)
+##
+## Every boss has STAGES (set stage_hp / stage_names in _boss_ready). When a stage's HP runs out
+## the boss BOUNCES BACK: screen clears, it heals to the next stage's HP under a new name, and
+## `stage` goes up. The boss bar shows one segment per stage. Inside each stage, `phase` goes
+## 1 -> 2 -> 3 at 66% and 33% of that stage's HP.
+##
+## Fights start with an intro (Events.boss_intro_started; Run plays BossIntro and locks the player).
 ##
 ## While an attack runs (`busy`), the boss moves with `move_vel` (zero unless the attack sets it).
 
-const BOUNCE_COLOR := Color(0.55, 1.0, 0.55)
-const CURVE_COLOR := Color(0.7, 0.75, 1.0)
+const BOUNCE_COLOR := Color("#7dff4a")
+const CURVE_COLOR := Color("#3de8ff")
 
 ## Name used for the boss bar and the death screen ("Slain by").
 var boss_name := ""
@@ -27,6 +35,17 @@ var muzzle := Vector2(0, -16)
 ## Animation override while an attack runs (EntityVisual.WINDUP / ATTACK / SUMMON), &"" = normal.
 var anim_state: StringName = &""
 var max_adds := 6
+## HP of each stage. Empty = one stage with data.max_hp.
+var stage_hp: Array = []
+## Name shown for each stage (boss bar, banner, death screen).
+var stage_names: Array = []
+## Shown under the name in the intro.
+var subtitle := ""
+## Tint and size the boss gets in its later stages.
+var stage_tint := Color(1.0, 0.55, 0.5)
+var stage_scale := 1.15
+var stage := 1
+var intro_done := false
 
 var _next_attack := 1.2
 var _last_attack := ""
@@ -40,9 +59,49 @@ var _halt := false
 
 func setup(hp_multiplier: float) -> void:
 	super(hp_multiplier)
-	if boss_name == "":
-		boss_name = data.display_name
-	Events.boss_spawned.emit(boss_name, int(health.max_hp))
+	if stage_hp.is_empty():
+		stage_hp = [int(health.max_hp)]
+	if stage_names.is_empty():
+		stage_names = [data.display_name]
+	while stage_names.size() < stage_hp.size():
+		stage_names.append(stage_names[stage_names.size() - 1])
+	boss_name = stage_names[0]
+	busy = true
+	health.invulnerable = true
+	contact_enabled = false
+	Events.boss_stages_set.emit(stage_hp)
+	Events.boss_spawned.emit(boss_name, total_hp())
+	health.setup(stage_hp[0])
+	Events.boss_intro_finished.connect(_end_intro, CONNECT_ONE_SHOT)
+	Events.boss_intro_started.emit(self, boss_name, subtitle)
+	await wait(6.0)   # safety: never stay frozen if the intro never reports back
+	_end_intro()
+
+
+func _end_intro() -> void:
+	if intro_done or is_dying:
+		return
+	intro_done = true
+	health.invulnerable = false
+	contact_enabled = true
+	busy = false
+	_next_attack = 0.6
+
+
+## Sum of all stages' HP (the full boss bar).
+func total_hp() -> int:
+	var t := 0
+	for hp in stage_hp:
+		t += int(hp)
+	return t
+
+
+## HP left in this stage plus every later stage.
+func remaining_hp() -> int:
+	var r := int(health.current)
+	for i in range(stage, stage_hp.size()):
+		r += int(stage_hp[i])
+	return r
 
 
 func _on_ready() -> void:
@@ -73,10 +132,14 @@ func _on_phase_changed(_phase: int) -> void:
 	pass
 
 
+func _on_stage_changed(_stage: int) -> void:
+	pass
+
+
 # --- Core ---------------------------------------------------------------------------------
 
 func _on_health_changed(current: float, maximum: float) -> void:
-	Events.boss_health_changed.emit(int(current), int(maximum))
+	Events.boss_health_changed.emit(remaining_hp(), total_hp())
 	var r := health.ratio()
 	var new_phase := 1
 	if r < 0.33:
@@ -201,13 +264,13 @@ func make_bouncy(bullets: Array, times: int) -> void:
 	for b: Projectile in bullets:
 		b.bounces = times
 		b.lifetime = 8.0
-		b.modulate = BOUNCE_COLOR
+		b.glow = BOUNCE_COLOR
 
 
 func make_curvy(bullets: Array, turn: float) -> void:
 	for b: Projectile in bullets:
 		b.turn = turn
-		b.modulate = CURVE_COLOR
+		b.glow = CURVE_COLOR
 
 
 ## Flashing wind-up before a big move.
@@ -320,6 +383,9 @@ func clear_bullets() -> void:
 func die() -> void:
 	if is_dying:
 		return
+	if stage < stage_hp.size():
+		_bounce_back()   # not dead yet: next stage
+		return
 	super()
 	busy = true
 	_charging = false
@@ -327,6 +393,54 @@ func die() -> void:
 	Events.boss_defeated.emit()
 	clear_bullets()
 	get_tree().call_group.call_deferred("enemies", "die")
+
+
+## Stage change: the boss bounces back with full HP for its next stage.
+func _bounce_back() -> void:
+	busy = true
+	interrupt()
+	health.invulnerable = true
+	contact_enabled = false
+	clear_bullets()
+	get_tree().call_group("enemies", "_kill_if_add", self)
+	anim_state = EntityVisual.HURT
+	visual.flash(0.8)
+	Events.camera_shake_requested.emit(8.0, 0.8)
+	Audio.play_sfx("boss_roar", 0.0)
+	await wait(0.8)
+	if is_dying:
+		return
+	if room:
+		await blink_to(room.center + Vector2(0, 10), 0.3, 0.3)
+	if is_dying:
+		return
+	health.invulnerable = true
+	contact_enabled = false
+	anim_state = EntityVisual.SUMMON
+	var tw := create_tween().set_parallel()
+	tw.tween_property(visual, "modulate", stage_tint, 0.6)
+	tw.tween_property(visual, "scale", Vector2.ONE * stage_scale, 0.6).set_trans(Tween.TRANS_BACK)
+	await wait(0.6)
+	if is_dying:
+		return
+	stage += 1
+	phase = 1
+	boss_name = stage_names[stage - 1]
+	health.setup(stage_hp[stage - 1])
+	Events.boss_stage_changed.emit(boss_name, stage)
+	Events.camera_shake_requested.emit(10.0, 0.6)
+	ring(32, data.projectile_speed)
+	ring(32, data.projectile_speed * 0.6)
+	_on_stage_changed(stage)
+	await wait(0.8)
+	if is_dying:
+		return
+	health.invulnerable = false
+	contact_enabled = true
+	anim_state = &""
+	resume_attacks()
+	busy = false
+	_next_attack = 0.4
 
 
 func _animate() -> void:

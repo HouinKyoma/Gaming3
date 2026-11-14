@@ -7,6 +7,8 @@ extends CharacterBody2D
 
 var stats: PlayerStats
 var god_mode := false
+## True during cutscenes (boss intro): no moving, no shooting, can't be hurt.
+var locked := false
 var is_dead := false
 
 var _shoot_cd := 0.0
@@ -33,6 +35,11 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if is_dead:
 		velocity = Vector2.ZERO
+		return
+	if locked:
+		velocity = Vector2.ZERO
+		health.invulnerable = true
+		visual.play(EntityVisual.IDLE)
 		return
 
 	_shoot_cd = maxf(_shoot_cd - delta, 0.0)

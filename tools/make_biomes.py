@@ -1,9 +1,8 @@
-"""Builds the biome tile sheets and the Bone Shaman placeholder from art the game already has
-(the 0x72 DungeonTileset II tiles in art/tiles/dungeon_tiles.png and the Spitter sprites).
+"""Builds the biome tile sheets from the 0x72 DungeonTileset II tiles in art/tiles/dungeon_tiles.png.
 
 Usage (from the project folder, needs: pip install pillow):  python tools/make_biomes.py
 
-OVERWRITES art/tiles/biome_*.png and art/enemies/bone_shaman/*. To use your own art instead,
+OVERWRITES art/tiles/biome_*.png. To use your own art instead,
 just paint over those PNGs (layout: see the top of scenes/rooms/room.gd) and don't run this again.
 """
 import os
@@ -134,38 +133,5 @@ def build_sheets():
         print("write", out)
 
 
-def bone_shaman():
-    pal = ((34, 22, 44), (168, 156, 176), (244, 238, 222))
-    src_dir = os.path.join(ART, "enemies", "spitter")
-    out_dir = os.path.join(ART, "enemies", "bone_shaman")
-    os.makedirs(out_dir, exist_ok=True)
-
-    def load(anim):
-        p = os.path.join(src_dir, "spitter_%s.png" % anim)
-        im = Image.open(p).convert("RGBA")
-        im = gradient_map(im, pal, 1.25)
-        return im.resize((im.width * 2, im.height * 2), Image.NEAREST)
-
-    def tint(im, rgb, amt):
-        a = im.split()[3]
-        mixed = Image.blend(im, Image.new("RGBA", im.size, rgb + (255,)), amt)
-        mixed.putalpha(a)
-        return mixed
-
-    idle, walk, attack, death = load("idle"), load("walk"), load("attack"), load("death")
-    fw = 32
-    first = idle.crop((0, 0, fw, idle.height))
-    for anim, im in (("idle", idle), ("walk", walk), ("attack", tint(attack, (120, 255, 160), 0.35)), ("death", death)):
-        im.save(os.path.join(out_dir, "bone_shaman_%s.png" % anim))
-    windup = Image.new("RGBA", (fw * 2, idle.height))
-    windup.paste(tint(first, (255, 230, 120), 0.15), (0, 0))
-    windup.paste(tint(first, (255, 230, 120), 0.55), (fw, 0))
-    windup.save(os.path.join(out_dir, "bone_shaman_windup.png"))
-    tint(idle, (160, 90, 230), 0.45).save(os.path.join(out_dir, "bone_shaman_summon.png"))
-    tint(first, (255, 255, 255), 0.6).save(os.path.join(out_dir, "bone_shaman_hurt.png"))
-    print("write", out_dir)
-
-
 if __name__ == "__main__":
     build_sheets()
-    bone_shaman()

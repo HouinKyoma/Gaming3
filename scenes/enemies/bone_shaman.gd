@@ -3,6 +3,8 @@ extends Boss
 ##   P1:         bouncing skull volleys, blink + ring, bone rain (warning circles), crawler summons
 ##   P2 (< 66%): + aimed beams (3 in a row, re-aimed each time); bone rain spits bullets
 ##   P3 (< 33%): + skull storm (bouncing, curving ring), double blinks, shorter rests
+## STAGE 2 "The Bone Shaman, Risen": skull walls (find the gap), beam fans, heavier bone rain,
+##   storms from the start; triple blinks.
 ## Numbers not listed here are in data/enemies/bone_shaman.tres.
 
 const MIN_RANGE := 110.0
@@ -12,17 +14,30 @@ var _strafe := 1.0
 
 
 func _boss_ready() -> void:
-	muzzle = Vector2(0, -22)
+	muzzle = Vector2(0, -32)
 	attack_gap = 0.7
 	_strafe = 1.0 if randf() < 0.5 else -1.0
+	stage_hp = [data.max_hp, 240]
+	stage_names = [data.display_name, "The Bone Shaman, Risen"]
+	subtitle = "Keeper of the Ossuary"
+	stage_tint = Color(1.25, 0.6, 0.95)
 
 
 func _on_phase_changed(p: int) -> void:
-	attack_gap = [0.7, 0.55, 0.4][p - 1]
+	attack_gap = [0.7, 0.55, 0.4][p - 1] * (0.6 if stage >= 2 else 1.0)
 	make_bouncy(ring(16, data.projectile_speed), 1)
 
 
+func _on_stage_changed(_stage: int) -> void:
+	attack_gap = 0.4
+
+
 func _attacks_for_phase(p: int) -> Array:
+	if stage >= 2:
+		var list := ["skulls", "blink", "rain", "storm", "skull_wall", "beam_fan"]
+		if p >= 2:
+			list.append("summon")
+		return list
 	match p:
 		1:
 			return ["skulls", "blink", "rain", "summon"]
@@ -52,7 +67,7 @@ func _attack(attack_name: String) -> void:
 				if halted():
 					return
 		"blink":
-			for i in (2 if phase >= 3 else 1):
+			for i in (3 if stage >= 2 else (2 if phase >= 3 else 1)):
 				var to := room.random_free_point(room.to_local(target_pos()), 120.0) if room else position
 				await blink_to(to)
 				if halted():
@@ -66,8 +81,8 @@ func _attack(attack_name: String) -> void:
 					return
 		"rain":
 			anim_state = EntityVisual.SUMMON
-			var bullets := 0 if phase == 1 else 6
-			for i in 4 + phase * 2:
+			var bullets := 0 if phase == 1 and stage == 1 else 6
+			for i in 4 + phase * 2 + (4 if stage >= 2 else 0):
 				var at := target_pos() + Vector2(randf_range(-40, 40), randf_range(-30, 30))
 				if i == 0:
 					at = target_pos()
@@ -92,6 +107,21 @@ func _attack(attack_name: String) -> void:
 			var more := ring(18, sp * 0.8)
 			make_curvy(more, -0.9)
 			await wait(0.6)
+		"skull_wall":
+			anim_state = EntityVisual.SUMMON
+			var sides := [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
+			bullet_wall(sides.pick_random(), sp * 0.85, 4)
+			await wait(0.7)
+			if halted():
+				return
+			make_bouncy(spread(5, 0.3, sp), 2)
+			await wait(0.6)
+		"beam_fan":
+			anim_state = EntityVisual.WINDUP
+			var base := aim()
+			for k in 5:
+				beam_from(gpos(), base.rotated((k - 2) * 0.35), 0.75, 0.5, 7.0)
+			await wait(1.3)
 		"summon":
 			summon(["crawler", "crawler", "crawler"] if phase < 3 else ["crawler", "crawler", "spitter"])
 			await wait(0.6)

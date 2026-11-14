@@ -27,14 +27,18 @@ const SPRITES := {
 	"charger": {"folder": "enemies/charger", "size": Vector2i(16, 24), "anims": {
 		"idle": [4, true], "walk": [8, true], "windup": [8, true], "attack": [12, true],
 		"death": [12, false]}},
-	"warden": {"folder": "enemies/warden", "size": Vector2i(32, 36), "anims": {
-		"idle": [6, true], "walk": [6, true], "windup": [8, true], "attack": [10, false],
-		"summon": [8, false], "hurt": [10, false], "death": [10, false]}},
+	# Floor 3 boss: Kronovi's "Undead Executioner" (free), imported by tools/import_bosses.py.
+	"warden": {"folder": "enemies/warden", "size": Vector2i(102, 76), "anims": {
+		"idle": [6, true], "walk": [8, true], "windup": [10, true], "attack": [20, false],
+		"summon": [16, false], "hurt": [10, false], "death": [14, false]}},
+	# The Warden's summoned spirits (from the same pack).
+	"spirit": {"folder": "enemies/spirit", "size": Vector2i(12, 22), "anims": {
+		"idle": [8, true], "walk": [10, true], "death": [12, false]}},
 
-	# Floor 2 boss. Placeholder = the Spitter (0x72 orc shaman) bleached to bone at 2x size.
-	"bone_shaman": {"folder": "enemies/bone_shaman", "size": Vector2i(32, 48), "anims": {
-		"idle": [6, true], "walk": [8, true], "windup": [8, true], "attack": [10, false],
-		"summon": [8, false], "hurt": [10, false], "death": [10, false]}},
+	# Floor 2 boss: CreativeKind's "Necromancer" (free), imported by tools/import_bosses.py.
+	"bone_shaman": {"folder": "enemies/bone_shaman", "size": Vector2i(104, 109), "anims": {
+		"idle": [8, true], "walk": [10, true], "windup": [10, true], "attack": [16, false],
+		"summon": [18, false], "hurt": [10, false], "death": [12, false]}},
 	# Final boss. Placeholder = the Warden recoloured red at 2x size (tools not needed, just overwrite).
 	"tyrant": {"folder": "enemies/tyrant", "size": Vector2i(64, 72), "anims": {
 		"idle": [6, true], "walk": [6, true], "windup": [8, true], "attack": [10, false],

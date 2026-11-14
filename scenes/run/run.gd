@@ -36,6 +36,7 @@ func _ready() -> void:
 	Events.floor_exit_reached.connect(_on_floor_exit_reached)
 	Events.player_died.connect(_on_player_died)
 	Events.boss_defeated.connect(_on_boss_defeated)
+	Events.boss_intro_started.connect(_on_boss_intro_started)
 	_build_overlay()
 	start_floor()
 
@@ -142,6 +143,26 @@ func _on_player_died(killer: String) -> void:
 	await get_tree().create_timer(0.8).timeout
 	Run.end_run(false, killer)
 	Game.show_death()
+
+
+## Boss intro: lock the player, glide the camera onto the boss and zoom in, show the title card.
+func _on_boss_intro_started(boss: Node2D, title: String, subtitle: String) -> void:
+	player.locked = true
+	camera.set("target", boss)
+	var zoom_in := create_tween()
+	zoom_in.tween_property(camera, "zoom", Vector2(1.8, 1.8), 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	var intro := BossIntro.new()
+	intro.title = title
+	intro.subtitle = subtitle
+	intro.finished.connect(_on_boss_intro_finished)
+	add_child(intro)
+
+
+func _on_boss_intro_finished() -> void:
+	camera.set("target", player)
+	var zoom_out := create_tween()
+	zoom_out.tween_property(camera, "zoom", Vector2.ONE, 0.35).set_trans(Tween.TRANS_SINE)
+	player.locked = false
 
 
 func _on_boss_defeated() -> void:

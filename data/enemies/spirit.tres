@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/enemy_data.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/spirit.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"spirit"
+display_name = "Lost Spirit"
+scene = ExtResource("2_scene")
+max_hp = 3
+move_speed = 85.0
+contact_damage = 1
+budget_cost = 2
+spawn_count = 2
+ash_drop = 1
+ash_chance = 0.3
+heart_chance = 0.05

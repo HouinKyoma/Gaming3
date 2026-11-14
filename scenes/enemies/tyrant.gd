@@ -4,23 +4,24 @@ extends Boss
 ##   P1:         walking spiral, aimed spread bursts, bouncing bombs, chain charges
 ##   P2 (< 66%): + bullet walls (find the gap), meteor rain, summons
 ##   P3 (< 33%): + double rings, faster
-## At 0 HP it BOUNCES BACK: clears the screen, heals to STAGE2_HP and becomes
-## STAGE 2 "The Tyrant Reborn" (new boss bar, phases start again):
+## At 0 HP it BOUNCES BACK (see Boss._bounce_back) into
+## STAGE 2 "The Tyrant Reborn" (second segment of the boss bar, phases start again):
 ##   twin curving spirals, rotating beams, crushing bullet walls from both sides, meteor storms,
 ##   blink slams next to you, bouncing bullet storms, 4-hit charge chains. Barely rests.
 ## Numbers not listed here are in data/enemies/tyrant.tres.
-
-const STAGE2_HP := 520
-const STAGE2_NAME := "The Tyrant Reborn"
-const STAGE2_TINT := Color(1.0, 0.55, 0.45)
-
-var stage := 1
-
 
 func _boss_ready() -> void:
 	muzzle = Vector2(0, -30)
 	attack_gap = 0.5
 	max_adds = 5
+	stage_hp = [data.max_hp, 520]
+	stage_names = [data.display_name, "The Tyrant Reborn"]
+	subtitle = "Lord of the Ashen Throne"
+	stage_tint = Color(1.0, 0.55, 0.45)
+
+
+func _on_stage_changed(_stage: int) -> void:
+	attack_gap = 0.3
 
 
 func _on_phase_changed(p: int) -> void:
@@ -187,53 +188,3 @@ func _attack(attack_name: String) -> void:
 			await wait(0.5)
 			make_bouncy(spread(7, 0.15, sp * 1.4), 2)
 			await wait(0.6)
-
-
-## Instead of dying in stage 1, the Tyrant bounces back.
-func die() -> void:
-	if stage == 1 and not is_dying:
-		_bounce_back()
-		return
-	super()
-
-
-func _bounce_back() -> void:
-	stage = 2
-	busy = true
-	interrupt()
-	health.invulnerable = true
-	contact_enabled = false
-	clear_bullets()
-	get_tree().call_group("enemies", "_kill_if_add", self)
-	anim_state = EntityVisual.HURT
-	visual.flash(0.8)
-	Events.camera_shake_requested.emit(8.0, 0.8)
-	Audio.play_sfx("boss_roar", 0.0)
-	await wait(0.8)
-	if room:
-		await blink_to(room.center + Vector2(0, 10), 0.3, 0.3)
-	if is_dying:
-		return
-	health.invulnerable = true
-	contact_enabled = false
-	anim_state = EntityVisual.SUMMON
-	var tw := create_tween().set_parallel()
-	tw.tween_property(visual, "modulate", STAGE2_TINT, 0.6)
-	tw.tween_property(visual, "scale", Vector2(1.15, 1.15), 0.6).set_trans(Tween.TRANS_BACK)
-	await wait(0.6)
-	# New boss bar: the HUD and music react to boss_spawned.
-	phase = 1
-	boss_name = STAGE2_NAME
-	health.setup(STAGE2_HP)
-	Events.boss_spawned.emit(boss_name, STAGE2_HP)
-	Events.camera_shake_requested.emit(10.0, 0.6)
-	ring(32, data.projectile_speed)
-	ring(32, data.projectile_speed * 0.6)
-	attack_gap = 0.3
-	await wait(0.8)
-	health.invulnerable = false
-	contact_enabled = true
-	anim_state = &""
-	resume_attacks()
-	busy = false
-	_next_attack = 0.4

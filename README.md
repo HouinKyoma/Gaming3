@@ -17,7 +17,8 @@ You die, your Ash is banked, you buy permanent upgrades, and you go back down st
 - **Bone Shaman** (floor 2): blinks around, bouncing skull volleys, bone rain warning circles, aimed beams, curving skull storms.
 - **Hollow Warden** (floor 3): ring bursts, bullet streams, bouncing orbs, chain charges, leap slams, cross / rotating beams, spirals, summons.
 - **Ashen Tyrant** (floor 4): spirals, bullet walls with a gap, meteor rain, bouncing bombs, chain charges. At 0 HP it **bounces back** as **The Tyrant Reborn** with a new health bar: twin curving spirals, rotating beams, crushing walls from both sides, meteor storms, blink slams.
-Green bullets bounce off walls, blue ones curve. Red circles and lines are warnings: get out before they fill.
+Every boss has an **intro** (camera zooms in, name card, Space skips) and **two stages**: the boss bar shows both segments, and when the first runs out the boss bounces back under a new name (Bone Shaman, Risen / The Warden Unchained / The Tyrant Reborn). Stage HP, names and intro subtitles are at the top of each boss script (`_boss_ready`).
+Enemy bullets are drawn in code for contrast (pink with a dark outline and white core); green bullets bounce off walls, cyan ones curve. To use `art/projectiles/enemy_bullet_spin.png` instead, set `DRAW_ENEMY_BULLETS = false` in `scenes/projectiles/projectile.gd`. Red circles and lines are warnings: get out before they fill.
 
 **Soft-lock safety:** every room checks itself 2-3 times a second: enemies stuck in walls or pits are moved out, the enemy counter is re-counted, and if you somehow leave the room you go through the door (or are put back). The exit / boss is always at least half the floor away from the start.
 
@@ -52,7 +53,8 @@ Everything you see is a placeholder at its **final path and size**. To put in re
 - Animated sprites are **horizontal strips**: frames left to right, no padding, transparent background.
 - Keep the **frame size** listed in `art/art_spec.gd`. The number of frames is read from the image width, so you can draw more or fewer frames.
 - Draw characters **facing right**, feet at the **bottom-centre** of the frame.
-- Biome tile sheets: `art/tiles/biome_*.png` (8 x 3 tiles, layout at the top of `scenes/rooms/room.gd`), made by `python tools/make_biomes.py` from the 0x72 tiles. The Bone Shaman (`art/enemies/bone_shaman/`, 32x48) is the Spitter bleached and doubled by the same script. Overwrite these with real art when you have it.
+- Boss sprites: the Hollow Warden is Kronovi's Undead Executioner and the Bone Shaman is CreativeKind's Necromancer, imported by `python tools/import_bosses.py` (reads `Undead executioner.zip` and `Necromancer_creativekind-Sheet.png` from the project folder; it trims, aligns and outlines the frames and prints the sizes for `art/art_spec.gd`). The Warden summons the pack's spirits ("Lost Spirit", also on floor 3).
+- Biome tile sheets: `art/tiles/biome_*.png` (8 x 3 tiles, layout at the top of `scenes/rooms/room.gd`), made by `python tools/make_biomes.py` from the 0x72 tiles. Overwrite these with real art when you have it.
 - The Ashen Tyrant's placeholder (`art/enemies/tyrant/`, 64x72 frames) is the Warden recoloured red at double size. Overwrite those 7 PNGs with your own boss.
 - Animation names are fixed: `idle`, `walk`, `attack`, `windup`, `dash`, `hurt`, `death`, `summon`.
 - Tiles: `art/tiles/dungeon_tiles.png` is a 4×3 grid of 16×16 tiles. Keep each tile in its slot (see the top of `scenes/rooms/room.gd`).

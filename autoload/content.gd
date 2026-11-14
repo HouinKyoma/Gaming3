@@ -24,6 +24,7 @@ const ENEMY_PATHS := [
 	"res://data/enemies/warden.tres",
 	"res://data/enemies/tyrant.tres",
 	"res://data/enemies/bone_shaman.tres",
+	"res://data/enemies/spirit.tres",
 ]
 
 const FLOOR_PATHS := [

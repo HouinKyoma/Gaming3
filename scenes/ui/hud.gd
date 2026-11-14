@@ -10,10 +10,12 @@ var _hearts: HBoxContainer
 var _ash_label: Label
 var _floor_label: Label
 var _boss_box: VBoxContainer
-var _boss_bar: ProgressBar
+var _boss_bar: BossBar
+var _stage_label: Label
 var _boss_name: Label
 var _banner: Label
 var _banner_sub: Label
+var _boss_stages: Array = []
 var _tex_full: Texture2D
 var _tex_half: Texture2D
 var _tex_empty: Texture2D
@@ -59,22 +61,21 @@ func _ready() -> void:
 	ash_box.add_child(_ash_label)
 
 	_boss_box = VBoxContainer.new()
-	_boss_box.position = Vector2(140, 244)
-	_boss_box.size = Vector2(200, 20)
-	_boss_box.add_theme_constant_override("separation", 0)
+	_boss_box.position = Vector2(120, 238)
+	_boss_box.size = Vector2(240, 26)
+	_boss_box.add_theme_constant_override("separation", 2)
 	_boss_box.visible = false
 	root.add_child(_boss_box)
-	_boss_name = UIKit.label("", 8, HORIZONTAL_ALIGNMENT_CENTER)
-	_boss_box.add_child(_boss_name)
-	_boss_bar = ProgressBar.new()
-	_boss_bar.show_percentage = false
-	_boss_bar.custom_minimum_size = Vector2(200, 5)
-	var bg := StyleBoxFlat.new()
-	bg.bg_color = Color(0.15, 0.1, 0.12)
-	var fill := StyleBoxFlat.new()
-	fill.bg_color = Color("#d9443c")
-	_boss_bar.add_theme_stylebox_override("background", bg)
-	_boss_bar.add_theme_stylebox_override("fill", fill)
+	var name_row := HBoxContainer.new()
+	_boss_box.add_child(name_row)
+	_boss_name = UIKit.label("", 9, HORIZONTAL_ALIGNMENT_LEFT, Color("#efe6d6"))
+	_boss_name.add_theme_color_override("font_outline_color", Color(0.15, 0, 0.02))
+	_boss_name.add_theme_constant_override("outline_size", 3)
+	_boss_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_row.add_child(_boss_name)
+	_stage_label = UIKit.label("", 8, HORIZONTAL_ALIGNMENT_RIGHT, Color("#e0303a"))
+	name_row.add_child(_stage_label)
+	_boss_bar = BossBar.new()
 	_boss_box.add_child(_boss_bar)
 
 	var minimap := Minimap.new()
@@ -90,6 +91,8 @@ func _ready() -> void:
 	_banner.modulate.a = 0.0
 	root.add_child(_banner)
 	_banner_sub = UIKit.label("", 9, HORIZONTAL_ALIGNMENT_CENTER, Color("#8fe38f"))
+	_banner_sub.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	_banner_sub.add_theme_constant_override("outline_size", 3)
 	_banner_sub.position = Vector2(0, 124)
 	_banner_sub.size = Vector2(480, 14)
 	_banner_sub.modulate.a = 0.0
@@ -101,6 +104,8 @@ func _ready() -> void:
 	Events.boss_spawned.connect(_on_boss_spawned)
 	Events.boss_health_changed.connect(_on_boss_health_changed)
 	Events.boss_defeated.connect(_on_boss_defeated)
+	Events.boss_stages_set.connect(func(stages: Array) -> void: _boss_stages = stages)
+	Events.boss_stage_changed.connect(_on_boss_stage_changed)
 
 	var max_hp: int = Run.stats.max_hp if Run.stats else 6
 	_update_hearts(Run.current_hp, max_hp)
@@ -157,15 +162,25 @@ func _show_banner(text: String, sub: String = "", hold: float = 1.2) -> void:
 
 func _on_boss_spawned(boss_name: String, max_hp: int) -> void:
 	_boss_name.text = boss_name
-	_boss_bar.max_value = max_hp
-	_boss_bar.value = max_hp
+	_boss_bar.start(_boss_stages, max_hp)
+	_update_stage_label(1)
 	_boss_box.visible = true
-	_show_banner(boss_name, "", 1.4)
 
 
 func _on_boss_health_changed(current: int, maximum: int) -> void:
-	_boss_bar.max_value = maximum
-	_boss_bar.value = current
+	_boss_bar.set_hp(current, maximum)
+
+
+func _on_boss_stage_changed(boss_name: String, stage: int) -> void:
+	_boss_name.text = boss_name
+	_boss_bar.flash()
+	_update_stage_label(stage)
+	_show_banner(boss_name, "It bounces back!", 1.6)
+
+
+func _update_stage_label(stage: int) -> void:
+	var count := maxi(_boss_stages.size(), 1)
+	_stage_label.text = "" if count <= 1 else ("STAGE " + ["I", "II", "III", "IV"][mini(stage, 4) - 1])
 
 
 func _on_boss_defeated() -> void:
