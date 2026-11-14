@@ -70,5 +70,3 @@ Everything you see is a placeholder at its **final path and size**. To put in re
 3. Untick **Export With Debug** when exporting (the admin keys still work; it just makes the build smaller and faster).
 4. For itch.io: zip the contents of `build/web/` (so `index.html` is at the top of the zip), upload it as an HTML game, and tick "This file will be played in the browser". Set the viewport to 960 × 540 and turn on the fullscreen button. Upload the zipped `build/windows/Ashborn.exe` too, as a Windows download.
 
-## Plan
-The full design and build plan is in the claude.ai project "Game jam" (`plans/roguelike_plan_and_structure.md`).
