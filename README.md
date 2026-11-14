@@ -9,7 +9,17 @@ You die, your Ash is banked, you buy permanent upgrades, and you go back down st
 
 **PRESS SPACE TO BOUNCE BACK** on the title screen starts a run. When you die, the same prompt appears: press Space and you are straight back in, with one more **Bounce** stack (+10% damage, +3% speed, +half a heart per stack, max 10, kept between sessions). The numbers are at the top of `autoload/run_state.gd` and `Save.BOUNCE_MAX`. The upgrade shop (the Threshold) is a button on the title and death screens.
 
-There are two bosses: the Hollow Warden guards the stairs on floor 3, and the **Ashen Tyrant** (floor 4, `scenes/enemies/tyrant.gd` + `data/enemies/tyrant.tres`) is the final, much harder fight. Each boss floor picks its boss with `boss_id` in its `data/floors/*.tres`.
+**Floors and biomes:** 1 The Crypt (spikes), 2 The Ossuary (pits, boss: Bone Shaman), 3 The Warden's Hall (spikes and pits, boss: Hollow Warden), 4 The Ashen Throne (lava, final boss: Ashen Tyrant). Each `data/floors/*.tres` sets its tile sheet, tint, hazard chances, how often rooms are bigger than the screen, and `boss_id`.
+
+**Rooms** come in five sizes (the camera follows you in the big ones). Most combat rooms are generated (`RoomTemplates.generate()`): pillar halls, rock clusters, inner walls, pit fields, rings, rivers with bridges, open arenas, plus the floor's hazards. Pits `O` block walking but not bullets, spikes `^` hurt while raised, lava `~` hurts (dash over it).
+
+**Bosses** (`scenes/enemies/boss.gd` is the shared base; each attack is a short script):
+- **Bone Shaman** (floor 2): blinks around, bouncing skull volleys, bone rain warning circles, aimed beams, curving skull storms.
+- **Hollow Warden** (floor 3): ring bursts, bullet streams, bouncing orbs, chain charges, leap slams, cross / rotating beams, spirals, summons.
+- **Ashen Tyrant** (floor 4): spirals, bullet walls with a gap, meteor rain, bouncing bombs, chain charges. At 0 HP it **bounces back** as **The Tyrant Reborn** with a new health bar: twin curving spirals, rotating beams, crushing walls from both sides, meteor storms, blink slams.
+Green bullets bounce off walls, blue ones curve. Red circles and lines are warnings: get out before they fill.
+
+**Soft-lock safety:** every room checks itself 2-3 times a second: enemies stuck in walls or pits are moved out, the enemy counter is re-counted, and if you somehow leave the room you go through the door (or are put back). The exit / boss is always at least half the floor away from the start.
 
 **Controls:** WASD move · mouse aims · hold left mouse to shoot · Space / right mouse to dash (after you buy Ember Dash) · Esc to pause.
 
@@ -42,6 +52,7 @@ Everything you see is a placeholder at its **final path and size**. To put in re
 - Animated sprites are **horizontal strips**: frames left to right, no padding, transparent background.
 - Keep the **frame size** listed in `art/art_spec.gd`. The number of frames is read from the image width, so you can draw more or fewer frames.
 - Draw characters **facing right**, feet at the **bottom-centre** of the frame.
+- Biome tile sheets: `art/tiles/biome_*.png` (8 x 3 tiles, layout at the top of `scenes/rooms/room.gd`), made by `python tools/make_biomes.py` from the 0x72 tiles. The Bone Shaman (`art/enemies/bone_shaman/`, 32x48) is the Spitter bleached and doubled by the same script. Overwrite these with real art when you have it.
 - The Ashen Tyrant's placeholder (`art/enemies/tyrant/`, 64x72 frames) is the Warden recoloured red at double size. Overwrite those 7 PNGs with your own boss.
 - Animation names are fixed: `idle`, `walk`, `attack`, `windup`, `dash`, `hurt`, `death`, `summon`.
 - Tiles: `art/tiles/dungeon_tiles.png` is a 4×3 grid of 16×16 tiles. Keep each tile in its slot (see the top of `scenes/rooms/room.gd`).

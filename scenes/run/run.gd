@@ -11,6 +11,7 @@ var current_coord := Vector2i.ZERO
 var current_room: Room
 
 var _switching := false
+var _switch_time := 0.0
 var _ending := false
 var _fade: ColorRect
 var _crosshair: Sprite2D
@@ -18,12 +19,20 @@ var _crosshair: Sprite2D
 @onready var room_holder: Node2D = $RoomHolder
 @onready var projectiles: Node2D = $Projectiles
 @onready var player: Player = $Player
+@onready var camera: Camera2D = $Camera2D
+
+var _ambient: CanvasModulate
 
 
 func _ready() -> void:
 	if not Run.active:
 		Run.start_new_run()
 	projectiles.add_to_group("projectile_layer")
+	player.collision_mask |= Room.PIT_LAYER   # can't walk over pits (bullets still fly over)
+	camera.set("target", player)
+	_ambient = CanvasModulate.new()
+	_ambient.name = "Ambient"
+	add_child(_ambient)
 	Events.floor_exit_reached.connect(_on_floor_exit_reached)
 	Events.player_died.connect(_on_player_died)
 	Events.boss_defeated.connect(_on_boss_defeated)
@@ -31,7 +40,12 @@ func _ready() -> void:
 	start_floor()
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	# Safety: never stay stuck "switching rooms" if something went wrong mid-switch.
+	if _switching:
+		_switch_time += delta
+		if _switch_time > 1.0:
+			_switching = false
 	if _crosshair:
 		_crosshair.global_position = get_global_mouse_position()
 
@@ -41,7 +55,8 @@ func start_floor() -> void:
 	layout = FloorGenerator.generate(fd.room_count, fd.is_boss_floor, Run.rng)
 	templates.clear()
 	for c: Vector2i in layout:
-		templates[c] = RoomTemplates.pick(layout[c], Run.rng)
+		templates[c] = RoomTemplates.build(layout[c], Run.rng, fd)
+	_ambient.color = fd.ambient
 	cleared = {Vector2i.ZERO: true}
 	visited = {}
 	enter_room(Vector2i.ZERO, Vector2i.ZERO)
@@ -73,6 +88,10 @@ func enter_room(coord: Vector2i, moved_dir: Vector2i) -> void:
 	# Moving RIGHT means arriving at the new room's LEFT door, hence -moved_dir.
 	player.global_position = room.to_global(room.get_entry_position(-moved_dir))
 	player.velocity = Vector2.ZERO
+	if camera.has_method("set_bounds"):
+		# The HUD bar covers the top 14 px, so the view starts at y = 0 and the room at y = 14.
+		camera.call("set_bounds", Rect2(Vector2.ZERO, room.room_size + Vector2(0, room_holder.position.y)))
+		camera.call("snap")
 	_switching = false
 	_fade_in()
 	Events.room_entered.emit(coord, layout[coord])
@@ -90,6 +109,7 @@ func _on_room_door_entered(dir: Vector2i) -> void:
 	if _switching or _ending:
 		return
 	_switching = true
+	_switch_time = 0.0
 	enter_room.call_deferred(current_coord + dir, dir)
 
 
@@ -119,7 +139,7 @@ func _on_player_died(killer: String) -> void:
 		return
 	_ending = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(0.8).timeout
 	Run.end_run(false, killer)
 	Game.show_death()
 
@@ -175,4 +195,4 @@ func _fade_in() -> void:
 		return
 	_fade.modulate.a = 1.0
 	var tween := create_tween()
-	tween.tween_property(_fade, "modulate:a", 0.0, 0.18)
+	tween.tween_property(_fade, "modulate:a", 0.0, 0.12)

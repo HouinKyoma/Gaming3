@@ -39,9 +39,9 @@ func _ready() -> void:
 	_trigger.monitorable = false
 	var trigger_shape := CollisionShape2D.new()
 	var trigger_rect := RectangleShape2D.new()
-	trigger_rect.size = Vector2(28, 6)
+	trigger_rect.size = Vector2(28, 24)
 	trigger_shape.shape = trigger_rect
-	trigger_shape.position = Vector2(0, -5)   # outer edge of the gap
+	trigger_shape.position = Vector2(0, -14)   # outer half of the gap and beyond, so a dash can't skip it
 	_trigger.add_child(trigger_shape)
 	add_child(_trigger)
 	_trigger.body_entered.connect(_on_trigger_body_entered)

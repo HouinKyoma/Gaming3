@@ -17,6 +17,8 @@ var room: Room
 var target: Player
 var knockback := Vector2.ZERO
 var is_dying := false
+## False while a boss is airborne / teleporting (no contact damage).
+var contact_enabled := true
 var _time := 0.0
 
 @onready var health: Health = $Health
@@ -29,6 +31,7 @@ func _ready() -> void:
 		push_error("%s has no EnemyData" % name)
 		data = EnemyData.new()
 	target = get_tree().get_first_node_in_group("player") as Player
+	collision_mask |= Room.PIT_LAYER   # walk around pits like the player
 	health.died.connect(die)
 	if health.max_hp <= 0.0:
 		health.setup(data.max_hp)
@@ -74,7 +77,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _check_contact() -> void:
-	if data.contact_damage <= 0:
+	if data.contact_damage <= 0 or not contact_enabled:
 		return
 	for body in contact_area.get_overlapping_bodies():
 		if body is Player:
@@ -116,6 +119,12 @@ func _drop_loot() -> void:
 		room.spawn_pickup.call_deferred(load(HEART_PICKUP_PATH), global_position)
 
 
+## Called on every enemy when a boss changes stage: everything except the boss dies.
+func _kill_if_add(boss: Node) -> void:
+	if self != boss:
+		die()
+
+
 # --- Helpers for subclasses ---------------------------------------------------------
 
 func dir_to_target() -> Vector2:
@@ -130,10 +139,17 @@ func distance_to_target() -> float:
 	return global_position.distance_to(target.global_position)
 
 
-func shoot_at(dir: Vector2, speed: float, damage: int) -> void:
+func shoot_at(dir: Vector2, speed: float, damage: int) -> Projectile:
+	return Enemy.spawn_bullet(get_tree(), global_position + Vector2(0, -6), dir, speed, damage, data.display_name)
+
+
+## Spawns an enemy bullet in the projectile layer (global position). Used by enemies and boss hazards.
+static func spawn_bullet(tree: SceneTree, pos: Vector2, dir: Vector2, speed: float, damage: int,
+		source: String, life: float = 5.0) -> Projectile:
 	var bullet := (load(ENEMY_BULLET_PATH) as PackedScene).instantiate() as Projectile
-	var layer := get_tree().get_first_node_in_group("projectile_layer")
+	var layer := tree.get_first_node_in_group("projectile_layer")
 	if layer == null:
-		layer = get_parent()
+		layer = tree.current_scene
 	layer.add_child(bullet)
-	bullet.setup(global_position + Vector2(0, -6), dir, speed, damage, 5.0, false, data.display_name)
+	bullet.setup(pos, dir, speed, damage, life, false, source)
+	return bullet

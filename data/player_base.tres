@@ -5,17 +5,17 @@
 [resource]
 script = ExtResource("1_script")
 max_hp = 6
-move_speed = 90.0
+move_speed = 118.0
 damage = 2.0
-fire_cooldown = 0.33
-bullet_speed = 220.0
-bullet_lifetime = 0.8
-invuln_time = 0.8
-magnet_radius = 24.0
+fire_cooldown = 0.24
+bullet_speed = 290.0
+bullet_lifetime = 0.7
+invuln_time = 0.75
+magnet_radius = 36.0
 ash_multiplier = 1.0
 can_dash = false
-dash_speed = 320.0
+dash_speed = 390.0
 dash_time = 0.15
-dash_cooldown = 0.9
+dash_cooldown = 0.55
 piercing = false
 second_wind = false

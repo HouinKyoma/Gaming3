@@ -11,9 +11,16 @@ const MAX_ATTEMPTS := 50
 
 static func generate(room_count: int, is_boss_floor: bool, rng: RandomNumberGenerator) -> Dictionary:
 	room_count = maxi(room_count, 4)
-	for attempt in MAX_ATTEMPTS:
+	# The exit / boss must be at least this many rooms from the start (no "skipping" the floor).
+	var min_far := clampi(room_count / 2, 2, 5)
+	for attempt in MAX_ATTEMPTS * 2:
 		var rooms := _grow(room_count, rng)
-		if rooms.size() == room_count:
+		if rooms.size() != room_count:
+			continue
+		var far := 0
+		for d in _bfs(rooms).values():
+			far = maxi(far, int(d))
+		if far >= min_far or attempt >= MAX_ATTEMPTS * 2 - 1:
 			_assign_special_rooms(rooms, is_boss_floor, rng)
 			return rooms
 	push_warning("FloorGenerator: fell back to a smaller layout")
