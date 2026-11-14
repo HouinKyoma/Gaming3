@@ -29,6 +29,11 @@ func _ready() -> void:
 	help.set_anchors_and_offsets_preset(PRESET_BOTTOM_WIDE)
 	help.offset_top = -18
 	help.offset_bottom = -4
+	var credit := UIKit.label("Art: 0x72 - DungeonTileset II (CC0)", 7, HORIZONTAL_ALIGNMENT_RIGHT, UIKit.TEXT_DIM)
+	add_child(credit)
+	credit.set_anchors_and_offsets_preset(PRESET_TOP_WIDE)
+	credit.offset_top = 4
+	credit.offset_right = -6
 	play.grab_focus.call_deferred()
 
 

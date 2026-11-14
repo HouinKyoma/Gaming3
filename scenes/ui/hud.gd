@@ -39,7 +39,7 @@ func _ready() -> void:
 
 	_hearts = HBoxContainer.new()
 	_hearts.add_theme_constant_override("separation", 1)
-	_hearts.position = Vector2(4, 3)
+	_hearts.position = Vector2(4, 1)
 	root.add_child(_hearts)
 
 	_floor_label = UIKit.label("", 9, HORIZONTAL_ALIGNMENT_CENTER, UIKit.TEXT_DIM)

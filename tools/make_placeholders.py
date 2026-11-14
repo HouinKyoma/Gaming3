@@ -13,12 +13,12 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "art")
 
 # key: (folder, (w, h), {anim: frames}, colour)
 SPRITES = {
-    "player":  ("player", (16, 16), {"idle": 4, "walk": 6, "dash": 3, "hurt": 2, "death": 6}, "#4a90e2"),
+    "player":  ("player", (16, 28), {"idle": 4, "walk": 6, "dash": 3, "hurt": 2, "death": 6}, "#4a90e2"),
     "crawler": ("enemies/crawler", (16, 16), {"idle": 2, "walk": 4, "death": 4}, "#d9443c"),
-    "swarmer": ("enemies/swarmer", (12, 12), {"idle": 2, "walk": 2, "death": 3}, "#f0803c"),
-    "spitter": ("enemies/spitter", (16, 16), {"idle": 2, "walk": 4, "attack": 3, "death": 4}, "#c0396b"),
-    "charger": ("enemies/charger", (24, 24), {"idle": 2, "walk": 4, "windup": 2, "attack": 2, "death": 5}, "#9e2a2b"),
-    "warden":  ("enemies/warden", (48, 48), {"idle": 4, "walk": 4, "windup": 2, "attack": 4, "summon": 4, "hurt": 1, "death": 8}, "#7a1f3d"),
+    "swarmer": ("enemies/swarmer", (16, 16), {"idle": 2, "walk": 2, "death": 3}, "#f0803c"),
+    "spitter": ("enemies/spitter", (16, 24), {"idle": 2, "walk": 4, "attack": 3, "death": 4}, "#c0396b"),
+    "charger": ("enemies/charger", (16, 24), {"idle": 2, "walk": 4, "windup": 2, "attack": 2, "death": 5}, "#9e2a2b"),
+    "warden":  ("enemies/warden", (32, 36), {"idle": 4, "walk": 4, "windup": 2, "attack": 4, "summon": 4, "hurt": 1, "death": 8}, "#7a1f3d"),
 }
 ROUND = {
     "player_bullet": ("projectiles", (8, 8), {"spin": 2}, "#ffe066"),

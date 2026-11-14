@@ -29,7 +29,12 @@ First launch goes straight into a run. After that, Play opens the upgrade shop (
 - **Sounds:** `Audio.play_sfx("name")` plays `audio/sfx/name.wav`. To replace a sound, overwrite the file. Music loops are `menu_loop`, `run_loop` and `boss_loop` in `audio/music/`.
 - **Adding an upgrade:** a `.tres` in `data/upgrades/` (stat name on `PlayerStats` + mode + costs), its path in `autoload/content.gd`, and an icon at `art/ui/icons/<id>.png`.
 
-## Replacing the art (all art must be our own)
+## Art credits
+Sprites and tiles: **0x72, "16x16 DungeonTileset II"** (CC0), https://0x72.itch.io/dungeontileset-ii.
+Rebuild them with `python tools/import_0x72.py <path to the pack's frames folder>`.
+Bullets, crosshair, logo and all sounds/music are our own generated placeholders.
+
+## Replacing the art
 Everything you see is a placeholder at its **final path and size**. To put in real art, **overwrite the PNG with one that has the same name**. No code changes.
 
 - Animated sprites are **horizontal strips**: frames left to right, no padding, transparent background.

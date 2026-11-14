@@ -4,3 +4,6 @@
 
 # Exported builds
 /build/
+
+# Downloaded asset packs (the imported art is already in art/)
+*.zip
