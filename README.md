@@ -38,6 +38,7 @@ Enemy bullets are drawn in code for contrast (see the bullet colours above). To 
 | `audio/` | Sound effects (`sfx/`) and music loops (`music/`), loaded by file name |
 | `tools/` | Python scripts that import the art packs and generate placeholder art / sounds |
 | `source_assets/` | The original art downloads (zips, sprite sheets). Ignored by Godot, not exported. |
+| `itch/` | itch.io page images (cover). Ignored by Godot. |
 | `unused/` | Leftover files the game doesn't use, kept instead of deleted. Ignored by Godot. |
 
 - **Treasure rooms** have a chest: walk into it (any HP, no dash needed) to get a random run item plus a full heal; a popup shows what you got (`scenes/rooms/treasure.gd`, `scenes/ui/item_popup.gd`).
