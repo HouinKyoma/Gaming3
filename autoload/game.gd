@@ -22,7 +22,7 @@ func goto(path: String) -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().change_scene_to_file.call_deferred(path)
 	if path == RUN:
-		Audio.play_music("run_loop")
+		Audio.play_hall_music()
 	elif path == DEATH:
 		Audio.stop_music()
 	else:
@@ -137,10 +137,14 @@ func _box(bg: Color, border: Color) -> StyleBoxFlat:
 	return sb
 
 
-# --- Debug keys (only in debug builds, i.e. when run from the editor) ---------------
+# --- Admin keys (F1-F5) -----------------------------------------------------------
+## Admin controls (F1-F5 keys and the "Reset save" button on the title screen).
+## On in every build, including the itch.io export. Set to false to hide them from players.
+const ADMIN_CONTROLS := true
+
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not OS.is_debug_build():
+	if not ADMIN_CONTROLS:
 		return
 	var key := event as InputEventKey
 	if key == null or not key.pressed or key.echo:
@@ -148,19 +152,19 @@ func _unhandled_input(event: InputEvent) -> void:
 	match key.keycode:
 		KEY_F1:
 			Save.add_ash_debug(100)
-			print("[debug] +100 Ash, total %d" % Save.get_ash())
+			print("[admin] +100 Ash, total %d" % Save.get_ash())
 		KEY_F2:
 			get_tree().call_group("enemies", "die")
-			print("[debug] killed all enemies")
+			print("[admin] killed all enemies")
 		KEY_F3:
 			if Run.active:
 				Events.floor_exit_reached.emit()
-				print("[debug] skip to next floor")
+				print("[admin] skip to next floor")
 		KEY_F4:
 			var player := get_tree().get_first_node_in_group("player") as Player
 			if player:
 				player.god_mode = not player.god_mode
-				print("[debug] god mode: %s" % player.god_mode)
+				print("[admin] god mode: %s" % player.god_mode)
 		KEY_F5:
 			Save.reset_save()
-			print("[debug] save reset")
+			print("[admin] save reset")

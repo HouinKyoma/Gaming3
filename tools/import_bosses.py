@@ -103,7 +103,7 @@ def pack(anims, center_from, scale, ghost, folder, key):
 
 
 def executioner():
-    zpath = os.path.join(ROOT, "Undead executioner.zip")
+    zpath = os.path.join(ROOT, "source_assets", "Undead executioner.zip")
     if not os.path.exists(zpath):
         print("skip executioner (zip not found)")
         return
@@ -136,7 +136,7 @@ def executioner():
 
 
 def necromancer():
-    path = os.path.join(ROOT, "Necromancer_creativekind-Sheet.png")
+    path = os.path.join(ROOT, "source_assets", "Necromancer_creativekind-Sheet.png")
     if not os.path.exists(path):
         print("skip necromancer (sheet not found)")
         return

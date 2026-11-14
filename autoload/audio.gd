@@ -6,6 +6,9 @@ extends Node
 const SFX_DIR := "res://audio/sfx/%s.wav"
 const MUSIC_DIR := "res://audio/music/%s.wav"
 const POOL_SIZE := 12
+## Ambient music that plays through the halls of a run (file in audio/music/).
+## Falls back to run_loop if the file is missing.
+const HALL_MUSIC := "hall_loop"
 
 var _pool: Array[AudioStreamPlayer] = []
 var _next := 0
@@ -32,7 +35,7 @@ func _ready() -> void:
 	Events.enemy_killed.connect(func(_d: EnemyData, _p: Vector2) -> void: play_sfx("enemy_die", 0.15))
 	Events.boss_spawned.connect(_on_boss_spawned)
 	Events.floor_started.connect(func(_i: int) -> void: play_sfx("stairs"))
-	Events.floor_started.connect(func(_i: int) -> void: play_music("run_loop"))
+	Events.floor_started.connect(func(_i: int) -> void: play_hall_music())
 	Events.player_died.connect(func(_k: String) -> void: play_sfx("death"))
 	Events.room_cleared.connect(func(_c: Vector2i) -> void: play_sfx("door"))
 	apply_settings()
@@ -64,6 +67,14 @@ func play_music(track: String) -> void:
 	if stream:
 		_music.stream = stream
 		_music.play()
+
+
+## The always-on background music for the halls (everything in a run except boss fights).
+func play_hall_music() -> void:
+	var track := HALL_MUSIC
+	if _load(MUSIC_DIR % track) == null:
+		track = "run_loop"
+	play_music(track)
 
 
 func stop_music() -> void:

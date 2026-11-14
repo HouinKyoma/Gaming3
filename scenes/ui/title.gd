@@ -3,6 +3,7 @@ extends Control
 ## The upgrade shop (the Threshold) is one click away once you have played a run.
 
 const LOGO_PATH := "res://art/ui/logo.png"
+const CreditsPanel := preload("res://scenes/ui/credits_panel.gd")
 
 var _prompt: BouncePrompt
 
@@ -42,8 +43,9 @@ func _ready() -> void:
 	if Save.get_stat("runs") > 0:
 		buttons.add_child(UIKit.button("Upgrades", Game.goto_hub))
 	buttons.add_child(UIKit.button("Settings", _open_settings))
-	if OS.is_debug_build():
-		buttons.add_child(UIKit.button("Reset save (debug)", _reset_save))
+	buttons.add_child(UIKit.button("Credits", _open_credits))
+	if Game.ADMIN_CONTROLS:
+		buttons.add_child(UIKit.button("Reset save", _reset_save))
 	if not OS.has_feature("web"):
 		buttons.add_child(UIKit.button("Quit", get_tree().quit))
 
@@ -61,13 +63,21 @@ func _ready() -> void:
 
 
 func _open_settings() -> void:
+	_open_panel(SettingsPanel.new())
+
+
+func _open_credits() -> void:
+	_open_panel(CreditsPanel.new())
+
+
+## Shows a panel (anything with a `closed` signal) centred over the title screen.
+func _open_panel(panel: Control) -> void:
 	_prompt.enabled = false
 	var center := CenterContainer.new()
 	center.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	add_child(center)
-	var panel := SettingsPanel.new()
-	panel.closed.connect(center.queue_free)
-	panel.closed.connect(func() -> void: _prompt.enabled = true)
+	panel.connect(&"closed", center.queue_free)
+	panel.connect(&"closed", func() -> void: _prompt.enabled = true)
 	center.add_child(panel)
 
 

@@ -11,10 +11,13 @@ config_version=5
 [application]
 
 config/name="Ashborn"
+config/description="Die. Bounce back. Rise stronger. A game jam roguelike."
+config/version="1.0"
 run/main_scene="res://scenes/ui/title.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Ashborn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
+boot_splash/bg_color=Color(0.055, 0.043, 0.063, 1)
 config/icon="res://icon.svg"
 
 [autoload]

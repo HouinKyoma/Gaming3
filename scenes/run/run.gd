@@ -169,7 +169,7 @@ func _on_boss_defeated() -> void:
 	if _ending:
 		return
 	if Run.floor_index + 1 < Content.floors.size():
-		Audio.play_music("run_loop")
+		Audio.play_hall_music()
 		return   # not the final boss: stairs appear, the run goes on
 	_ending = true
 	await get_tree().create_timer(2.0).timeout
