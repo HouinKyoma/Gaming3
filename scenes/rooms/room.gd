@@ -263,9 +263,9 @@ func _begin_combat() -> void:
 func _begin_boss() -> void:
 	is_cleared = false
 	_set_doors(Door.State.LOCKED)
-	var boss: EnemyData = Content.get_enemy(Content.BOSS_ID)
+	var boss: EnemyData = Content.get_enemy(floor_data.boss_id)
 	if boss == null:
-		push_error("Room: no boss EnemyData with id '%s'" % Content.BOSS_ID)
+		push_error("Room: no boss EnemyData with id '%s'" % floor_data.boss_id)
 		_clear()
 		return
 	_pending = [[boss, CENTER + Vector2(0, -16), 1.0]]
@@ -383,7 +383,9 @@ func _clear() -> void:
 
 
 func _spawn_special() -> void:
-	if room_type == FloorGenerator.RoomType.EXIT:
+	# A boss room that is not on the last floor also gets stairs once the boss is dead.
+	var boss_exit := room_type == FloorGenerator.RoomType.BOSS and Run.floor_index + 1 < Content.floors.size()
+	if room_type == FloorGenerator.RoomType.EXIT or boss_exit:
 		var stairs := ExitStairs.new()
 		stairs.name = "ExitStairs"
 		stairs.position = CENTER

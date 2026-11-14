@@ -32,6 +32,7 @@ func _ready() -> void:
 	Events.enemy_killed.connect(func(_d: EnemyData, _p: Vector2) -> void: play_sfx("enemy_die", 0.15))
 	Events.boss_spawned.connect(_on_boss_spawned)
 	Events.floor_started.connect(func(_i: int) -> void: play_sfx("stairs"))
+	Events.floor_started.connect(func(_i: int) -> void: play_music("run_loop"))
 	Events.player_died.connect(func(_k: String) -> void: play_sfx("death"))
 	Events.room_cleared.connect(func(_c: Vector2i) -> void: play_sfx("door"))
 	apply_settings()

@@ -7,7 +7,9 @@ You die, your Ash is banked, you buy permanent upgrades, and you go back down st
 1. Open this folder in Godot 4.7 (Project Manager > Import > `project.godot`).
 2. Let it import (first time only), then press **F5**.
 
-First launch goes straight into a run. After that, Play opens the upgrade shop (the Threshold).
+**PRESS SPACE TO BOUNCE BACK** on the title screen starts a run. When you die, the same prompt appears: press Space and you are straight back in, with one more **Bounce** stack (+10% damage, +3% speed, +half a heart per stack, max 10, kept between sessions). The numbers are at the top of `autoload/run_state.gd` and `Save.BOUNCE_MAX`. The upgrade shop (the Threshold) is a button on the title and death screens.
+
+There are two bosses: the Hollow Warden guards the stairs on floor 3, and the **Ashen Tyrant** (floor 4, `scenes/enemies/tyrant.gd` + `data/enemies/tyrant.tres`) is the final, much harder fight. Each boss floor picks its boss with `boss_id` in its `data/floors/*.tres`.
 
 **Controls:** WASD move · mouse aims · hold left mouse to shoot · Space / right mouse to dash (after you buy Ember Dash) · Esc to pause.
 
@@ -40,6 +42,7 @@ Everything you see is a placeholder at its **final path and size**. To put in re
 - Animated sprites are **horizontal strips**: frames left to right, no padding, transparent background.
 - Keep the **frame size** listed in `art/art_spec.gd`. The number of frames is read from the image width, so you can draw more or fewer frames.
 - Draw characters **facing right**, feet at the **bottom-centre** of the frame.
+- The Ashen Tyrant's placeholder (`art/enemies/tyrant/`, 64x72 frames) is the Warden recoloured red at double size. Overwrite those 7 PNGs with your own boss.
 - Animation names are fixed: `idle`, `walk`, `attack`, `windup`, `dash`, `hurt`, `death`, `summon`.
 - Tiles: `art/tiles/dungeon_tiles.png` is a 4×3 grid of 16×16 tiles. Keep each tile in its slot (see the top of `scenes/rooms/room.gd`).
 - Deleted a placeholder by accident? Run `python tools/make_placeholders.py`. It only creates missing files.

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/enemy_data.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/tyrant.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"tyrant"
+display_name = "The Ashen Tyrant"
+scene = ExtResource("2_scene")
+max_hp = 600
+move_speed = 42.0
+contact_damage = 3
+budget_cost = 99
+spawn_count = 1
+ash_drop = 80
+ash_chance = 1.0
+heart_chance = 0.0
+projectile_speed = 85.0
+projectile_damage = 1
+windup_time = 0.5
+charge_speed = 250.0
+charge_time = 0.55

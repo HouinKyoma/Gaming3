@@ -18,6 +18,11 @@ var last_result: Dictionary = {}
 
 var _ash_exact := 0.0
 
+## "Bounce back" buff, per stack (stacks = Save.get_bounce(), +1 per death, max Save.BOUNCE_MAX).
+const BOUNCE_DAMAGE := 0.10   ## +10% damage
+const BOUNCE_SPEED := 0.03    ## +3% move speed
+const BOUNCE_HP := 1          ## +1 HP (half a heart)
+
 
 func _ready() -> void:
 	Events.enemy_killed.connect(_on_enemy_killed)
@@ -51,6 +56,20 @@ func rebuild_stats() -> void:
 		up.apply(stats, Save.get_level(up.id))
 	for boon in boons:
 		boon.apply(stats, 1)
+	var bounce := Save.get_bounce()
+	stats.damage *= 1.0 + BOUNCE_DAMAGE * bounce
+	stats.move_speed *= 1.0 + BOUNCE_SPEED * bounce
+	stats.max_hp += BOUNCE_HP * bounce
+
+
+## "Bounce x3: +30% damage, +9% speed, +1.5 hearts" (empty string at 0 stacks).
+func bounce_text(stacks: int) -> String:
+	if stacks <= 0:
+		return ""
+	var hearts := BOUNCE_HP * stacks / 2.0
+	var hearts_text := str(int(hearts)) if is_equal_approx(hearts, roundf(hearts)) else "%.1f" % hearts
+	return "Bounce x%d: +%d%% damage, +%d%% speed, +%s hearts" % [
+			stacks, roundi(BOUNCE_DAMAGE * stacks * 100.0), roundi(BOUNCE_SPEED * stacks * 100.0), hearts_text]
 
 
 func add_boon(boon: UpgradeData) -> void:
@@ -81,7 +100,10 @@ func end_run(won: bool, killer: String) -> void:
 		"kills": kills,
 		"time": time,
 	}
+	var bounce_before := Save.get_bounce()
 	Save.bank_run(ash, floor_index + 1, won, killer)
+	last_result["bounce"] = Save.get_bounce()
+	last_result["bounce_gained"] = Save.get_bounce() > bounce_before
 
 
 func _on_enemy_killed(_data: EnemyData, _position: Vector2) -> void:

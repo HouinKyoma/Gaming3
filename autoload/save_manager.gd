@@ -6,6 +6,8 @@ extends Node
 const SAVE_PATH := "user://save.json"
 const TMP_PATH := "user://save.json.tmp"
 const VERSION := 1
+## Most Bounce stacks you can hold (one is gained per death). See Run.rebuild_stats().
+const BOUNCE_MAX := 10
 
 var data: Dictionary = {}
 
@@ -18,6 +20,7 @@ func _defaults() -> Dictionary:
 	return {
 		"version": VERSION,
 		"ash": 0,
+		"bounce": 0,
 		"upgrades": {},
 		"stats": {"runs": 0, "wins": 0, "best_floor": 0, "total_ash": 0, "deaths_by": {}},
 		"settings": {"music": 0.8, "sfx": 1.0, "fullscreen": false},
@@ -78,6 +81,11 @@ func get_ash() -> int:
 	return int(data["ash"])
 
 
+## Bounce stacks: +1 every time you die, kept forever (until the save is reset).
+func get_bounce() -> int:
+	return int(data.get("bounce", 0))
+
+
 func get_level(id: StringName) -> int:
 	var ups: Dictionary = data["upgrades"]
 	return int(ups.get(String(id), 0))
@@ -111,7 +119,9 @@ func bank_run(ash_earned: int, floor_reached: int, won: bool, killer: String) ->
 	stats["best_floor"] = maxi(get_stat("best_floor"), floor_reached)
 	if won:
 		stats["wins"] = get_stat("wins") + 1
-	elif killer != "":
+	else:
+		data["bounce"] = mini(get_bounce() + 1, BOUNCE_MAX)
+	if not won and killer != "":
 		var deaths: Dictionary = stats["deaths_by"]
 		deaths[killer] = int(deaths.get(killer, 0)) + 1
 	save_game()

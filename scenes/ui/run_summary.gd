@@ -1,6 +1,7 @@
 extends Control
 ## Death screen and victory screen (same script, `won` set in the .tscn).
 ## Shows the run's result from Run.last_result. The Ash is already banked by then.
+## On death: shows the Bounce buff you just earned and PRESS SPACE TO BOUNCE BACK (starts the next run).
 
 @export var won := false
 
@@ -16,7 +17,7 @@ func _ready() -> void:
 	var title := "VICTORY" if won else "YOU BURNED OUT"
 	box.add_child(UIKit.label(title, 20, HORIZONTAL_ALIGNMENT_CENTER, UIKit.ACCENT))
 	if won:
-		box.add_child(UIKit.label("The Hollow Warden is ash. For now.", 10, HORIZONTAL_ALIGNMENT_CENTER, UIKit.TEXT_DIM))
+		box.add_child(UIKit.label("The Ashen Tyrant is ash. For now.", 10, HORIZONTAL_ALIGNMENT_CENTER, UIKit.TEXT_DIM))
 	else:
 		box.add_child(UIKit.label("Slain by: %s" % str(r.get("killer", "?")), 10, HORIZONTAL_ALIGNMENT_CENTER, UIKit.TEXT_DIM))
 
@@ -36,14 +37,29 @@ func _ready() -> void:
 	if hint != "":
 		box.add_child(UIKit.label(hint, 9, HORIZONTAL_ALIGNMENT_CENTER, UIKit.TEXT_DIM))
 
+	if not won:
+		var stacks := int(r.get("bounce", Save.get_bounce()))
+		var bounce_line := Run.bounce_text(stacks)
+		if bool(r.get("bounce_gained", false)):
+			bounce_line = "You come back stronger!  " + bounce_line
+		elif stacks >= Save.BOUNCE_MAX:
+			bounce_line += "  (max)"
+		if bounce_line != "":
+			box.add_child(UIKit.label(bounce_line, 9, HORIZONTAL_ALIGNMENT_CENTER, Color("#8fe38f")))
+		var prompt := BouncePrompt.new()
+		prompt.input_delay = 0.5
+		prompt.pressed.connect(Game.start_run)
+		box.add_child(prompt)
+
 	var buttons := HBoxContainer.new()
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
 	buttons.add_theme_constant_override("separation", 8)
 	box.add_child(buttons)
-	var shop := UIKit.button("Return to the Threshold", Game.goto_hub, 11)
+	var shop := UIKit.button("Spend ash (the Threshold)" if not won else "Return to the Threshold", Game.goto_hub, 11 if won else 9)
 	buttons.add_child(shop)
 	buttons.add_child(UIKit.button("Title", Game.goto_title))
-	shop.grab_focus.call_deferred()
+	if won:
+		shop.grab_focus.call_deferred()
 
 
 func _set_earned_text(value: float) -> void:

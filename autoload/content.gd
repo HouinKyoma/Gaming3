@@ -22,12 +22,14 @@ const ENEMY_PATHS := [
 	"res://data/enemies/spitter.tres",
 	"res://data/enemies/charger.tres",
 	"res://data/enemies/warden.tres",
+	"res://data/enemies/tyrant.tres",
 ]
 
 const FLOOR_PATHS := [
 	"res://data/floors/floor_1.tres",
 	"res://data/floors/floor_2.tres",
 	"res://data/floors/floor_3.tres",
+	"res://data/floors/floor_4.tres",
 ]
 
 ## Run-only boons offered between floors (UpgradeData with no costs).
@@ -42,6 +44,7 @@ const BOON_PATHS := [
 	"res://data/boons/boon_thick_skin.tres",
 ]
 
+## Default boss. Each floor picks its own with FloorData.boss_id.
 const BOSS_ID := "warden"
 
 var player_base: PlayerStats

@@ -150,5 +150,8 @@ func _on_boss_health_changed(current: int, maximum: int) -> void:
 
 func _on_boss_defeated() -> void:
 	_boss_box.visible = false
-	_banner.text = "The Warden falls"
+	_banner.text = "%s falls" % _boss_name.text
 	_banner.modulate.a = 1.0
+	var tween := create_tween()
+	tween.tween_interval(1.6)
+	tween.tween_property(_banner, "modulate:a", 0.0, 0.6)

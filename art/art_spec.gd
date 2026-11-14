@@ -31,6 +31,11 @@ const SPRITES := {
 		"idle": [6, true], "walk": [6, true], "windup": [8, true], "attack": [10, false],
 		"summon": [8, false], "hurt": [10, false], "death": [10, false]}},
 
+	# Final boss. Placeholder = the Warden recoloured red at 2x size (tools not needed, just overwrite).
+	"tyrant": {"folder": "enemies/tyrant", "size": Vector2i(64, 72), "anims": {
+		"idle": [6, true], "walk": [6, true], "windup": [8, true], "attack": [10, false],
+		"summon": [8, false], "hurt": [10, false], "death": [10, false]}},
+
 	# --- Projectiles and pickups -------------------------------------------------
 	"player_bullet": {"folder": "projectiles", "size": Vector2i(8, 8), "anims": {
 		"spin": [12, true]}},

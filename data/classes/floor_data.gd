@@ -9,4 +9,6 @@ extends Resource
 @export var enemy_pool: PackedStringArray = PackedStringArray()
 @export var hp_multiplier: float = 1.0
 @export var is_boss_floor: bool = false
+## EnemyData.id of the boss in this floor's boss room (only used when is_boss_floor).
+@export var boss_id: String = "warden"
 @export var clear_bonus_ash: int = 10         ## dropped when the exit room is cleared

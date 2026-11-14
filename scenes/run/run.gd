@@ -127,6 +127,9 @@ func _on_player_died(killer: String) -> void:
 func _on_boss_defeated() -> void:
 	if _ending:
 		return
+	if Run.floor_index + 1 < Content.floors.size():
+		Audio.play_music("run_loop")
+		return   # not the final boss: stairs appear, the run goes on
 	_ending = true
 	await get_tree().create_timer(2.0).timeout
 	Run.end_run(true, "")
