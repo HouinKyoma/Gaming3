@@ -139,6 +139,18 @@ func _on_boss_defeated() -> void:
 # --- Overlay: fade between rooms + crosshair ------------------------------------------
 
 func _build_overlay() -> void:
+	var vignette_layer := CanvasLayer.new()
+	vignette_layer.name = "Vignette"
+	vignette_layer.layer = 4
+	add_child(vignette_layer)
+	var vignette := TextureRect.new()
+	vignette.texture = EmberBackground.make_vignette(0.55)
+	vignette.stretch_mode = TextureRect.STRETCH_SCALE
+	vignette.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vignette.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	vignette_layer.add_child(vignette)
+
 	var layer := CanvasLayer.new()
 	layer.name = "Fade"
 	layer.layer = 10

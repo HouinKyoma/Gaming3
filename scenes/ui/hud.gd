@@ -13,6 +13,7 @@ var _boss_box: VBoxContainer
 var _boss_bar: ProgressBar
 var _boss_name: Label
 var _banner: Label
+var _banner_sub: Label
 var _tex_full: Texture2D
 var _tex_half: Texture2D
 var _tex_empty: Texture2D
@@ -82,11 +83,17 @@ func _ready() -> void:
 	minimap.size = Vector2(58, 42)
 	root.add_child(minimap)
 
-	_banner = UIKit.label("", 16, HORIZONTAL_ALIGNMENT_CENTER, UIKit.ACCENT)
-	_banner.position = Vector2(0, 100)
-	_banner.size = Vector2(480, 24)
+	_banner = UIKit.title("", 18)
+	_banner.position = Vector2(0, 96)
+	_banner.size = Vector2(480, 28)
+	_banner.pivot_offset = _banner.size / 2.0
 	_banner.modulate.a = 0.0
 	root.add_child(_banner)
+	_banner_sub = UIKit.label("", 9, HORIZONTAL_ALIGNMENT_CENTER, Color("#8fe38f"))
+	_banner_sub.position = Vector2(0, 124)
+	_banner_sub.size = Vector2(480, 14)
+	_banner_sub.modulate.a = 0.0
+	root.add_child(_banner_sub)
 
 	Events.player_health_changed.connect(_update_hearts)
 	Events.run_ash_changed.connect(_on_ash_changed)
@@ -129,11 +136,23 @@ func _on_floor_started(floor_index: int) -> void:
 	if floor_index < Content.floors.size():
 		name_text = Content.floors[floor_index].display_name
 	_floor_label.text = name_text
-	_banner.text = name_text
+	var sub := ""
+	if floor_index == 0:
+		sub = Run.bounce_text(Save.get_bounce())
+	_show_banner(name_text, sub)
+
+
+func _show_banner(text: String, sub: String = "", hold: float = 1.2) -> void:
+	_banner.text = text
+	_banner_sub.text = sub
+	_banner.scale = Vector2(1.8, 1.8)
 	_banner.modulate.a = 1.0
-	var tween := create_tween()
-	tween.tween_interval(1.0)
-	tween.tween_property(_banner, "modulate:a", 0.0, 0.6)
+	_banner_sub.modulate.a = 1.0 if sub != "" else 0.0
+	var pop := create_tween()
+	pop.tween_property(_banner, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	var tween := create_tween().set_parallel()
+	tween.tween_property(_banner, "modulate:a", 0.0, 0.6).set_delay(hold)
+	tween.tween_property(_banner_sub, "modulate:a", 0.0, 0.6).set_delay(hold + 0.4)
 
 
 func _on_boss_spawned(boss_name: String, max_hp: int) -> void:
@@ -141,6 +160,7 @@ func _on_boss_spawned(boss_name: String, max_hp: int) -> void:
 	_boss_bar.max_value = max_hp
 	_boss_bar.value = max_hp
 	_boss_box.visible = true
+	_show_banner(boss_name, "", 1.4)
 
 
 func _on_boss_health_changed(current: int, maximum: int) -> void:
@@ -150,8 +170,4 @@ func _on_boss_health_changed(current: int, maximum: int) -> void:
 
 func _on_boss_defeated() -> void:
 	_boss_box.visible = false
-	_banner.text = "%s falls" % _boss_name.text
-	_banner.modulate.a = 1.0
-	var tween := create_tween()
-	tween.tween_interval(1.6)
-	tween.tween_property(_banner, "modulate:a", 0.0, 0.6)
+	_show_banner("%s falls" % _boss_name.text, "", 1.8)

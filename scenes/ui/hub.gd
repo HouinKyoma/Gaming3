@@ -14,7 +14,7 @@ var _stats_label: Label
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(PRESET_FULL_RECT)
-	UIKit.background(self)
+	UIKit.ember_background(self)
 
 	var margin := MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(PRESET_FULL_RECT)

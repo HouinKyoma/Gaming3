@@ -10,12 +10,17 @@ var _earned_label: Label
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(PRESET_FULL_RECT)
-	UIKit.background(self)
+	if won:
+		UIKit.ember_background(self, Color("#12100a"), Color("#ffd36a"))
+	else:
+		UIKit.ember_background(self, Color("#140809"), Color("#ff6a3d"))
 	var r: Dictionary = Run.last_result
 	var box := UIKit.center_box(self, 5)
 
 	var title := "VICTORY" if won else "YOU BURNED OUT"
-	box.add_child(UIKit.label(title, 20, HORIZONTAL_ALIGNMENT_CENTER, UIKit.ACCENT))
+	var title_label := UIKit.title(title, 22, Color("#ffd36a") if won else Color("#ff7a4a"))
+	box.add_child(title_label)
+	UIKit.pop_in(title_label, 0.05, 2.4)
 	if won:
 		box.add_child(UIKit.label("The Ashen Tyrant is ash. For now.", 10, HORIZONTAL_ALIGNMENT_CENTER, UIKit.TEXT_DIM))
 	else:
@@ -37,6 +42,12 @@ func _ready() -> void:
 	if hint != "":
 		box.add_child(UIKit.label(hint, 9, HORIZONTAL_ALIGNMENT_CENTER, UIKit.TEXT_DIM))
 
+	var reveal := 0.35
+	for child in box.get_children():
+		if child != title_label:
+			UIKit.fade_in(child, reveal)
+			reveal += 0.08
+
 	if not won:
 		var stacks := int(r.get("bounce", Save.get_bounce()))
 		var bounce_line := Run.bounce_text(stacks)
@@ -45,16 +56,20 @@ func _ready() -> void:
 		elif stacks >= Save.BOUNCE_MAX:
 			bounce_line += "  (max)"
 		if bounce_line != "":
-			box.add_child(UIKit.label(bounce_line, 9, HORIZONTAL_ALIGNMENT_CENTER, Color("#8fe38f")))
+			var bl := UIKit.label(bounce_line, 9, HORIZONTAL_ALIGNMENT_CENTER, Color("#8fe38f"))
+			box.add_child(bl)
+			UIKit.pop_in(bl, reveal + 0.1, 1.5)
 		var prompt := BouncePrompt.new()
-		prompt.input_delay = 0.5
+		prompt.input_delay = 0.6
 		prompt.pressed.connect(Game.start_run)
 		box.add_child(prompt)
+		UIKit.fade_in(prompt, reveal + 0.3)
 
 	var buttons := HBoxContainer.new()
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
 	buttons.add_theme_constant_override("separation", 8)
 	box.add_child(buttons)
+	UIKit.fade_in(buttons, reveal + 0.4)
 	var shop := UIKit.button("Spend ash (the Threshold)" if not won else "Return to the Threshold", Game.goto_hub, 11 if won else 9)
 	buttons.add_child(shop)
 	buttons.add_child(UIKit.button("Title", Game.goto_title))

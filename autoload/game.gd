@@ -85,9 +85,56 @@ func _add_action(action: StringName, keys: Array, mouse_buttons: Array, joy_axes
 
 
 func _setup_theme() -> void:
-	var ui_theme := Theme.new()
-	ui_theme.default_font_size = 10
-	get_tree().root.theme = ui_theme
+	var t := Theme.new()
+	t.default_font_size = 10
+	var accent := UIKit.ACCENT
+
+	# Buttons: dark ember panels with a warm border that lights up on hover / focus.
+	t.set_stylebox("normal", "Button", _box(Color("#1c1419"), Color("#5a3a2e")))
+	t.set_stylebox("hover", "Button", _box(Color("#2b1b1e"), accent))
+	t.set_stylebox("pressed", "Button", _box(Color("#3d2216"), accent.lightened(0.3)))
+	t.set_stylebox("disabled", "Button", _box(Color("#141014"), Color("#2e2428")))
+	var focus := _box(Color(0, 0, 0, 0), accent)
+	focus.draw_center = false
+	t.set_stylebox("focus", "Button", focus)
+	t.set_color("font_color", "Button", Color("#e8dcd4"))
+	t.set_color("font_hover_color", "Button", accent.lightened(0.2))
+	t.set_color("font_pressed_color", "Button", Color.WHITE)
+	t.set_color("font_focus_color", "Button", accent.lightened(0.2))
+	t.set_color("font_disabled_color", "Button", Color("#6a5e64"))
+	t.set_color("font_outline_color", "Button", Color(0, 0, 0, 0.8))
+	t.set_constant("outline_size", "Button", 2)
+
+	# Panels
+	var panel := _box(Color(0.07, 0.05, 0.08, 0.92), Color("#4a3028"))
+	panel.set_content_margin_all(6)
+	t.set_stylebox("panel", "PanelContainer", panel)
+	t.set_stylebox("panel", "Panel", panel)
+
+	# Labels get a soft shadow so they read over the animated backgrounds.
+	t.set_color("font_shadow_color", "Label", Color(0, 0, 0, 0.6))
+	t.set_constant("shadow_offset_x", "Label", 1)
+	t.set_constant("shadow_offset_y", "Label", 1)
+
+	# Sliders / checkboxes in Settings
+	t.set_stylebox("slider", "HSlider", _box(Color("#1c1419"), Color("#5a3a2e")))
+	t.set_stylebox("grabber_area", "HSlider", _box(accent.darkened(0.3), accent))
+	t.set_stylebox("grabber_area_highlight", "HSlider", _box(accent, accent.lightened(0.3)))
+
+	get_tree().root.theme = t
+
+
+func _box(bg: Color, border: Color) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = bg
+	sb.border_color = border
+	sb.set_border_width_all(1)
+	sb.set_corner_radius_all(2)
+	sb.content_margin_left = 8
+	sb.content_margin_right = 8
+	sb.content_margin_top = 3
+	sb.content_margin_bottom = 3
+	return sb
 
 
 # --- Debug keys (only in debug builds, i.e. when run from the editor) ---------------

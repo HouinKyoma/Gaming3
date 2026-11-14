@@ -9,26 +9,36 @@ var _prompt: BouncePrompt
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(PRESET_FULL_RECT)
-	UIKit.background(self)
-	var box := UIKit.center_box(self, 8)
+	UIKit.ember_background(self)
+	var box := UIKit.center_box(self, 6)
 
+	var logo: Control
 	if ResourceLoader.exists(LOGO_PATH):
-		box.add_child(UIKit.icon(LOGO_PATH))
+		logo = UIKit.icon(LOGO_PATH)
 	else:
-		box.add_child(UIKit.label("ASHBORN", 24, HORIZONTAL_ALIGNMENT_CENTER, UIKit.ACCENT))
-	box.add_child(UIKit.label("Die. Bounce back. Rise stronger.", 10, HORIZONTAL_ALIGNMENT_CENTER, UIKit.TEXT_DIM))
+		logo = UIKit.title("ASHBORN", 30)
+	box.add_child(logo)
+	UIKit.pop_in(logo, 0.0, 1.6)
+	logo.create_tween().tween_callback(func() -> void: UIKit.breathe(logo)).set_delay(0.5)
+	var tagline := UIKit.label("Die. Bounce back. Rise stronger.", 10, HORIZONTAL_ALIGNMENT_CENTER, UIKit.TEXT_DIM)
+	box.add_child(tagline)
+	UIKit.fade_in(tagline, 0.35)
 
 	_prompt = BouncePrompt.new()
 	_prompt.pressed.connect(Game.start_run)
 	box.add_child(_prompt)
+	UIKit.fade_in(_prompt, 0.55)
 	var bounce_line := Run.bounce_text(Save.get_bounce())
 	if bounce_line != "":
-		box.add_child(UIKit.label(bounce_line, 8, HORIZONTAL_ALIGNMENT_CENTER))
+		var bl := UIKit.label(bounce_line, 8, HORIZONTAL_ALIGNMENT_CENTER, Color("#8fe38f"))
+		box.add_child(bl)
+		UIKit.fade_in(bl, 0.7)
 
 	var buttons := HBoxContainer.new()
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
 	buttons.add_theme_constant_override("separation", 6)
 	box.add_child(buttons)
+	UIKit.fade_in(buttons, 0.8)
 	if Save.get_stat("runs") > 0:
 		buttons.add_child(UIKit.button("Upgrades", Game.goto_hub))
 	buttons.add_child(UIKit.button("Settings", _open_settings))
