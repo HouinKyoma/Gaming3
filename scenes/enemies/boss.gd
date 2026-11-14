@@ -22,6 +22,9 @@ extends Enemy
 
 const BOUNCE_COLOR := Color("#7dff4a")
 const CURVE_COLOR := Color("#3de8ff")
+## Heavy bullets: big, red-orange, take a FULL heart (2 damage) instead of half.
+const HEAVY_COLOR := Color("#ff4a1a")
+const HEAVY_DAMAGE := 2
 
 ## Name used for the boss bar and the death screen ("Slain by").
 var boss_name := ""
@@ -219,8 +222,13 @@ func wait(t: float) -> void:
 	timer.queue_free()
 
 
+## Where bullets come from. If the muzzle point is inside a wall or rock (boss standing right
+## under one), fire from the body instead so bullets (especially bouncing ones) don't get stuck.
 func gpos() -> Vector2:
-	return global_position + muzzle
+	var p := global_position + muzzle
+	if room and Room.SOLID.contains(room.cell_char(room.to_local(p))):
+		return global_position + Vector2(0, -6)
+	return p
 
 
 ## Unit vector from the muzzle to the player's chest.
@@ -265,6 +273,29 @@ func make_bouncy(bullets: Array, times: int) -> void:
 		b.bounces = times
 		b.lifetime = 8.0
 		b.glow = BOUNCE_COLOR
+
+
+## Makes bullets heavy: bigger (hitbox too), red-orange, and they hit for HEAVY_DAMAGE.
+func make_heavy(bullets: Array) -> void:
+	for b: Projectile in bullets:
+		b.damage = HEAVY_DAMAGE
+		b.scale = Vector2.ONE * 1.8
+		b.glow = HEAVY_COLOR
+		b.lifetime = maxf(b.lifetime, 6.0)
+
+
+func heavy_shot(dir: Vector2, speed: float) -> Projectile:
+	var b := shoot(dir, speed)
+	make_heavy([b])
+	return b
+
+
+## Bouncing heavy bullet (ricochets `times` times, still red-orange so you know it hurts).
+func heavy_bouncer(dir: Vector2, speed: float, times: int = 2) -> Projectile:
+	var b := shoot(dir, speed)
+	make_bouncy([b], times)
+	make_heavy([b])
+	return b
 
 
 func make_curvy(bullets: Array, turn: float) -> void:
@@ -325,6 +356,32 @@ func circle_at(global_pos: Vector2, radius: float, delay: float, bullets: int = 
 
 func beam_from(global_pos: Vector2, dir: Vector2, delay: float, duration: float, width: float = 10.0, spin: float = 0.0) -> BossHazard:
 	return BossHazard.beam(get_tree(), global_pos, dir, delay, duration, boss_name, width, spin)
+
+
+## Scythe sweep / fire breath: a pie-slice in front of the boss (see BossHazard.arc).
+func sweep(dir: Vector2, radius: float, half_angle: float, delay: float, duration: float = 0.12,
+		spin: float = 0.0, color: Color = BossHazard.WARN, from: Vector2 = Vector2.INF) -> BossHazard:
+	var at := global_position + Vector2(0, -12) if from == Vector2.INF else from
+	return BossHazard.arc(get_tree(), at, dir, radius, half_angle, delay, boss_name, duration, spin, color)
+
+
+## A puddle that hurts while you stand in it (lava, curses).
+func pool(global_pos: Vector2, radius: float, delay: float, duration: float, color: Color) -> BossHazard:
+	return BossHazard.zone(get_tree(), global_pos, radius, delay, duration, boss_name, color)
+
+
+## Throws a spinning scythe that flies `reach` px and comes back to the boss.
+func throw_scythe(dir: Vector2, reach: float = 150.0, speed: float = 190.0) -> BossHazard:
+	return BossHazard.scythe(get_tree(), gpos(), dir, self, boss_name, reach, speed)
+
+
+## A bullet that steers toward the player for `time` seconds.
+func homing_shot(dir: Vector2, speed: float, turn_rate: float, time: float, color: Color) -> Projectile:
+	var b := shoot(dir, speed)
+	b.homing = turn_rate
+	b.homing_time = time
+	b.glow = color
+	return b
 
 
 ## A wall of bullets sweeping across the room from one side, with a gap to slip through.
@@ -429,8 +486,7 @@ func _bounce_back() -> void:
 	health.setup(stage_hp[stage - 1])
 	Events.boss_stage_changed.emit(boss_name, stage)
 	Events.camera_shake_requested.emit(10.0, 0.6)
-	ring(32, data.projectile_speed)
-	ring(32, data.projectile_speed * 0.6)
+	ring(20, data.projectile_speed * 0.8)
 	_on_stage_changed(stage)
 	await wait(0.8)
 	if is_dying:

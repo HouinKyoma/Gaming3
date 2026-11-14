@@ -85,6 +85,17 @@ func _on_trigger_body_entered(body: Node) -> void:
 		entered.emit(direction)
 
 
+## Backup for body_entered: if the player is standing in an open doorway (for example the first
+## touch was ignored by the room), keep reporting it. Room and Run ignore duplicates.
+func _physics_process(_delta: float) -> void:
+	if state != State.OPEN or not _trigger.monitoring:
+		return
+	for body in _trigger.get_overlapping_bodies():
+		if body is Player:
+			entered.emit(direction)
+			return
+
+
 static func _rotation_for(dir: Vector2i) -> float:
 	match dir:
 		Vector2i.DOWN:

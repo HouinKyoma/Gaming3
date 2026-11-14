@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_script")
 display_name = "Floor 1 - The Crypt"
-room_count = 7
-combat_budget = 4
+room_count = 5
+combat_budget = 3
 enemy_pool = PackedStringArray("crawler", "spitter", "swarmer")
 hp_multiplier = 1.0
 is_boss_floor = false
@@ -16,4 +16,4 @@ ambient = Color(1, 0.96, 0.92, 1)
 pit_chance = 0.15
 spike_chance = 0.3
 lava_chance = 0.0
-big_room_chance = 0.35
+big_room_chance = 0.15

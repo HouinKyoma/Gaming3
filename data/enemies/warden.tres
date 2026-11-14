@@ -6,11 +6,11 @@
 [resource]
 script = ExtResource("1_script")
 id = &"warden"
-display_name = "The Hollow Warden"
+display_name = "The Hollow Reaper"
 scene = ExtResource("2_scene")
-max_hp = 340
-move_speed = 40.0
-contact_damage = 2
+max_hp = 280
+move_speed = 52.0
+contact_damage = 1
 budget_cost = 99
 spawn_count = 1
 ash_drop = 40
@@ -19,5 +19,5 @@ heart_chance = 0.0
 projectile_speed = 100.0
 projectile_damage = 1
 windup_time = 0.5
-charge_speed = 300.0
-charge_time = 0.5
+charge_speed = 330.0
+charge_time = 0.45

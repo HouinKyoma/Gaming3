@@ -76,9 +76,23 @@ func _on_music_finished() -> void:
 		_music.play()   # simple loop (works whatever the import loop setting is)
 
 
+## Boss music per boss (FloorData.boss_id -> file in audio/music/). Unlisted bosses use boss_loop.
+const BOSS_MUSIC := {
+	"bone_shaman": "boss_theme",   # The Necromancer
+	"warden": "boss_reaper",       # The Hollow Reaper
+	"tyrant": "boss_theme",        # The Ashen Tyrant
+}
+
+
 func _on_boss_spawned(_boss_name: String, _max_hp: int) -> void:
 	play_sfx("boss_roar", 0.0)
-	play_music("boss_loop")
+	var track := "boss_loop"
+	if Run.floor_index >= 0 and Run.floor_index < Content.floors.size():
+		var id := Content.floors[Run.floor_index].boss_id
+		track = BOSS_MUSIC.get(id, "boss_loop")
+	if _load(MUSIC_DIR % track) == null:
+		track = "boss_loop"
+	play_music(track)
 
 
 func _load(path: String) -> AudioStream:

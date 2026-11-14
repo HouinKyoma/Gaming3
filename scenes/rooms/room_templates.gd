@@ -14,7 +14,7 @@ extends RefCounted
 
 ## Interior sizes (the room adds a 1-tile wall all round). Keep both numbers even.
 const STANDARD := Vector2i(28, 14)
-const BIG_SIZES := [Vector2i(42, 14), Vector2i(28, 24), Vector2i(36, 20), Vector2i(42, 24)]
+const BIG_SIZES := [Vector2i(36, 14), Vector2i(28, 20), Vector2i(34, 18)]
 ## Cells you can walk on without getting hurt (used for the "is every door reachable" check).
 const PATHABLE := ".S^"
 

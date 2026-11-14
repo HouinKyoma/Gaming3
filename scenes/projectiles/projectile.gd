@@ -14,6 +14,9 @@ var bounces := 0
 var turn := 0.0
 ## Speeds up (or slows down if negative) this many px/s per second, between min_speed and max_speed.
 var accel := 0.0
+## Steers toward the player at this many radians per second, for homing_time seconds (homing bolts).
+var homing := 0.0
+var homing_time := 0.0
 var min_speed := 30.0
 var max_speed := 400.0
 ## Enemy bullets are drawn in code for maximum contrast on every biome: a soft glow, a dark
@@ -52,6 +55,14 @@ func setup(pos: Vector2, dir: Vector2, speed: float, dmg: float, life: float,
 
 
 func _physics_process(delta: float) -> void:
+	if homing > 0.0 and homing_time > 0.0:
+		homing_time -= delta
+		var p := get_tree().get_first_node_in_group("player") as Node2D
+		if p:
+			var want := (p.global_position + Vector2(0, -6)) - global_position
+			var da := velocity.angle_to(want)
+			velocity = velocity.rotated(clampf(da, -homing * delta, homing * delta))
+			rotation = velocity.angle()
 	if turn != 0.0:
 		velocity = velocity.rotated(turn * delta)
 		rotation = velocity.angle()
@@ -93,6 +104,9 @@ func _draw() -> void:
 	draw_circle(Vector2.ZERO, 4.6, Color(0.04, 0.0, 0.07, 0.95))
 	draw_circle(Vector2.ZERO, 3.4, glow)
 	draw_circle(Vector2.ZERO, 1.6, Color(1, 1, 1, 0.95))
+	if damage >= 2.0:
+		# Heavy bullet (full heart): pulsing yellow warning ring.
+		draw_arc(Vector2.ZERO, 6.0 + p, 0.0, TAU, 16, Color(1.0, 0.9, 0.3, 0.85), 1.0)
 
 
 ## Reflects off a wall the bullet is about to hit. Returns true if it bounced.

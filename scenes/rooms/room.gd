@@ -42,6 +42,10 @@ const BOSS_SPAWN_DELAY := 1.0
 const SPIKE_CYCLE := 1.8
 const SPIKE_UP_TIME := 0.7
 const SAFETY_INTERVAL := 0.4
+## Doors ignore the player for this long after the room is entered (see _on_door_entered).
+const DOOR_GRACE := 0.2
+## How close (px) the player must be to a door for it to count.
+const DOOR_REACH := 40.0
 
 var coord := Vector2i.ZERO
 var room_type: int = FloorGenerator.RoomType.COMBAT
@@ -619,5 +623,16 @@ func _spawn_bonus_ash() -> void:
 
 
 func _on_door_entered(dir: Vector2i) -> void:
-	if is_cleared:
-		door_entered.emit(dir)
+	if not is_cleared or not is_inside_tree():
+		return
+	# Every room sits at the same place, so a door can briefly "see" the player where they stood
+	# in the previous room (same door on the same side). Only count it if the player really is
+	# at this door right now, and not in the first moment after arriving.
+	if _t < DOOR_GRACE:
+		return
+	var player := get_tree().get_first_node_in_group("player") as Player
+	if player == null:
+		return
+	if to_local(player.global_position).distance_to(_door_position(dir)) > DOOR_REACH:
+		return
+	door_entered.emit(dir)

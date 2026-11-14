@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_script")
 display_name = "Floor 2 - The Ossuary"
-room_count = 9
-combat_budget = 6
+room_count = 6
+combat_budget = 4
 enemy_pool = PackedStringArray("crawler", "spitter", "swarmer", "charger")
 hp_multiplier = 1.25
 is_boss_floor = true
@@ -17,4 +17,4 @@ ambient = Color(1, 0.95, 0.85, 1)
 pit_chance = 0.5
 spike_chance = 0.25
 lava_chance = 0.0
-big_room_chance = 0.45
+big_room_chance = 0.2
