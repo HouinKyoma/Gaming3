@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/enemy_data.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/crawler.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"crawler"
+display_name = "Crawler"
+scene = ExtResource("2_scene")
+max_hp = 4
+move_speed = 40.0
+contact_damage = 1
+budget_cost = 1
+spawn_count = 1
+ash_drop = 1
+ash_chance = 1.0
+heart_chance = 0.08

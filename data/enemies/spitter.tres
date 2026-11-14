@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/enemy_data.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/spitter.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"spitter"
+display_name = "Spitter"
+scene = ExtResource("2_scene")
+max_hp = 6
+move_speed = 30.0
+contact_damage = 1
+budget_cost = 2
+spawn_count = 1
+ash_drop = 2
+ash_chance = 1.0
+heart_chance = 0.08
+attack_cooldown = 2.0
+projectile_speed = 90.0
+projectile_damage = 1
+preferred_min_range = 80.0
+preferred_max_range = 120.0

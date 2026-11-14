@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/enemy_data.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/charger.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"charger"
+display_name = "Charger"
+scene = ExtResource("2_scene")
+max_hp = 10
+move_speed = 35.0
+contact_damage = 2
+budget_cost = 3
+spawn_count = 1
+ash_drop = 3
+ash_chance = 1.0
+heart_chance = 0.1
+windup_time = 0.6
+charge_speed = 260.0
+charge_time = 0.4

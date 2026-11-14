@@ -10,14 +10,40 @@ config_version=5
 
 [application]
 
-config/name="New Game Project"
-config/features=PackedStringArray("4.7", "Forward Plus")
+config/name="Ashborn"
+run/main_scene="res://scenes/ui/title.tscn"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="Ashborn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Events="*res://autoload/events.gd"
+Content="*res://autoload/content.gd"
+Save="*res://autoload/save_manager.gd"
+Audio="*res://autoload/audio.gd"
+Run="*res://autoload/run_state.gd"
+Game="*res://autoload/game.gd"
 
 [display]
 
+window/size/viewport_width=480
+window/size/viewport_height=270
+window/size/window_width_override=1440
+window/size/window_height_override=810
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/stretch/scale_mode="integer"
+
+[layer_names]
+
+2d_physics/layer_1="world"
+2d_physics/layer_2="player"
+2d_physics/layer_3="enemies"
+2d_physics/layer_4="player_bullets"
+2d_physics/layer_5="enemy_bullets"
+2d_physics/layer_6="pickups"
+2d_physics/layer_7="triggers"
 
 [physics]
 
@@ -25,4 +51,8 @@ window/stretch/aspect="expand"
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.055, 0.043, 0.063, 1)

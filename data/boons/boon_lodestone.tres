@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/upgrade_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"boon_lodestone"
+display_name = "Lodestone"
+description = "Pick up Ash from twice as far."
+stat = &"magnet_radius"
+mode = 1
+value_per_level = 1.0
+costs = Array[int]([])
+sort_order = 4

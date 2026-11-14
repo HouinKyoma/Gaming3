@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/upgrade_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"boon_hearty"
+display_name = "Hearty"
+description = "+1 heart, and heals it."
+stat = &"max_hp"
+mode = 0
+value_per_level = 2.0
+costs = Array[int]([])
+sort_order = 3

@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/enemies/warden.gd" id="1_script"]
+[ext_resource type="Script" path="res://scenes/components/entity_visual.gd" id="2_visual"]
+[ext_resource type="Script" path="res://scenes/components/health.gd" id="3_health"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 14.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_contact"]
+radius = 15.0
+
+[node name="Warden" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 4
+collision_mask = 5
+motion_mode = 1
+script = ExtResource("1_script")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -14.0)
+shape = SubResource("CircleShape2D_body")
+
+[node name="Visual" type="Node2D" parent="."]
+script = ExtResource("2_visual")
+art_key = "warden"
+
+[node name="Health" type="Node" parent="."]
+script = ExtResource("3_health")
+
+[node name="ContactArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ContactArea"]
+position = Vector2(0, -14.0)
+shape = SubResource("CircleShape2D_contact")

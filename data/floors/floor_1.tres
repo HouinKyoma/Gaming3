@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FloorData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/floor_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Floor 1 - The Upper Crypt"
+room_count = 7
+combat_budget = 4
+enemy_pool = PackedStringArray("crawler", "spitter", "swarmer")
+hp_multiplier = 1.0
+is_boss_floor = false
+clear_bonus_ash = 10

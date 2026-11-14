@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UpgradeData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/upgrade_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"rapid_fire"
+display_name = "Rapid Fire"
+description = "Shoot 12% faster per level."
+stat = &"fire_cooldown"
+mode = 1
+value_per_level = -0.12
+costs = Array[int]([25, 55, 100])
+sort_order = 3

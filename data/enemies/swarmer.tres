@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/enemy_data.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/swarmer.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_script")
+id = &"swarmer"
+display_name = "Swarmer"
+scene = ExtResource("2_scene")
+max_hp = 2
+move_speed = 75.0
+contact_damage = 1
+budget_cost = 2
+spawn_count = 3
+ash_drop = 1
+ash_chance = 0.4
+heart_chance = 0.03

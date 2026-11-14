@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FloorData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/floor_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Floor 3 - The Warden's Hall"
+room_count = 10
+combat_budget = 8
+enemy_pool = PackedStringArray("crawler", "spitter", "swarmer", "charger")
+hp_multiplier = 1.5
+is_boss_floor = true
+clear_bonus_ash = 30
