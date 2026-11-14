@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="FloorData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/floor_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Floor 2 - The Ossuary"
+room_count = 6
+combat_budget = 4
+enemy_pool = PackedStringArray("crawler", "spitter", "swarmer", "charger")
+hp_multiplier = 1.25
+is_boss_floor = true
+clear_bonus_ash = 20
+boss_id = "bone_shaman"
+tiles_path = "res://art/tiles/biome_ossuary.png"
+ambient = Color(1, 0.95, 0.85, 1)
+pit_chance = 0.5
+spike_chance = 0.25
+lava_chance = 0.0
+big_room_chance = 0.2

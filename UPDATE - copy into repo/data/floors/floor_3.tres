@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="FloorData" format=3]
+
+[ext_resource type="Script" path="res://data/classes/floor_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Floor 3 - The Warden's Hall"
+room_count = 6
+combat_budget = 5
+enemy_pool = PackedStringArray("crawler", "spitter", "swarmer", "charger", "spirit")
+hp_multiplier = 1.5
+is_boss_floor = true
+clear_bonus_ash = 30
+boss_id = "warden"
+tiles_path = "res://art/tiles/biome_hall.png"
+ambient = Color(0.85, 0.92, 1, 1)
+pit_chance = 0.3
+spike_chance = 0.45
+lava_chance = 0.0
+big_room_chance = 0.2
