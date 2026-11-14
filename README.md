@@ -51,22 +51,3 @@ Enemy bullets are drawn in code for contrast (see the bullet colours above). To 
 Made by Erkhem and Erdembileg (game) and Enkhtuvshin (music). The full list of third-party assets is in `CREDITS.md` and in the game (title screen > **Credits**); edit `CREDITS` in `scenes/ui/credits_panel.gd` when it changes.
 Rebuild the 0x72 sprites with `python tools/import_0x72.py <path to the pack's frames folder>`.
 
-## Replacing the art
-Everything you see is a placeholder at its **final path and size**. To put in real art, **overwrite the PNG with one that has the same name**. No code changes.
-
-- Animated sprites are **horizontal strips**: frames left to right, no padding, transparent background.
-- Keep the **frame size** listed in `art/art_spec.gd`. The number of frames is read from the image width, so you can draw more or fewer frames.
-- Draw characters **facing right**, feet at the **bottom-centre** of the frame.
-- Boss sprites: the Hollow Reaper is Kronovi's Undead Executioner and the Necromancer is CreativeKind's Necromancer, imported by `python tools/import_bosses.py` (reads `Undead executioner.zip` and `Necromancer_creativekind-Sheet.png` from `source_assets/`; it trims, aligns and outlines the frames and prints the sizes for `art/art_spec.gd`). The Necromancer raises the pack's spirits ("Lost Spirit", also on floor 3).
-- Biome tile sheets: `art/tiles/biome_*.png` (8 x 3 tiles, layout at the top of `scenes/rooms/room.gd`), made by `python tools/make_biomes.py` from the 0x72 tiles. Overwrite these with real art when you have it.
-- The Ashen Tyrant (`art/enemies/tyrant/`, 64x72 frames) is 0x72's big demon (CC0) at double size. Overwrite those 7 PNGs to change it.
-- Animation names are fixed: `idle`, `walk`, `attack`, `windup`, `dash`, `hurt`, `death`, `summon`.
-- Tiles: `art/tiles/dungeon_tiles.png` is a 4×3 grid of 16×16 tiles. Keep each tile in its slot (see the top of `scenes/rooms/room.gd`).
-- Deleted a placeholder by accident? Run `python tools/make_placeholders.py`. It only creates missing files.
-
-## Exporting (Windows + itch.io Web)
-1. In Godot: Editor > Manage Export Templates > Download and Install (once per machine).
-2. Project > Export. Two presets are ready: **Windows Desktop** (single .exe in `build/windows/`) and **Web** (`build/web/`, thread support off so itch.io needs no special settings).
-3. Untick **Export With Debug** when exporting (the admin keys still work; it just makes the build smaller and faster).
-4. For itch.io: zip the contents of `build/web/` (so `index.html` is at the top of the zip), upload it as an HTML game, and tick "This file will be played in the browser". Set the viewport to 960 × 540 and turn on the fullscreen button. Upload the zipped `build/windows/Ashborn.exe` too, as a Windows download.
-
