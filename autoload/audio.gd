@@ -16,6 +16,9 @@ var _music: AudioStreamPlayer
 var _music_name := ""
 var _cache: Dictionary = {}          # path -> AudioStream (or null if missing)
 var _last_played: Dictionary = {}    # name -> msec, to stop the same sound stacking
+## Browsers mute the page until the first click/key press. Music started before that
+## is lost, so on the web we restart it on the first input.
+var _web_unlocked := not OS.has_feature("web")
 
 
 func _ready() -> void:
@@ -39,6 +42,20 @@ func _ready() -> void:
 	Events.player_died.connect(func(_k: String) -> void: play_sfx("death"))
 	Events.room_cleared.connect(func(_c: Vector2i) -> void: play_sfx("door"))
 	apply_settings()
+
+
+
+func _input(event: InputEvent) -> void:
+	if _web_unlocked:
+		return
+	var is_press := (event is InputEventMouseButton or event is InputEventKey \
+			or event is InputEventScreenTouch or event is InputEventJoypadButton) and event.is_pressed()
+	if not is_press:
+		return
+	_web_unlocked = true
+	set_process_input(false)
+	if _music_name != "" and _music.stream:
+		_music.play()
 
 
 ## pitch_jitter: random pitch variation (0.1 = +/-10%) so repeated sounds don't grate.
